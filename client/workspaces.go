@@ -86,7 +86,9 @@ func (c *Client) GetWorkspace(name string) (workspace *Workspace, err error) {
 
 // CreateWorkspace creates a workspace
 func (c *Client) CreateWorkspace(workspace *Workspace, isDefault bool) (err error) {
-	payload, _ := json.Marshal(&workspace)
+	payload, _ := json.Marshal(map[string]*Workspace{
+		"workspace": workspace,
+	})
 	statusCode, body, err := c.doRequest("POST", fmt.Sprintf("/workspaces?default=%t", isDefault), bytes.NewBuffer(payload))
 	if err != nil {
 		return
@@ -106,7 +108,10 @@ func (c *Client) CreateWorkspace(workspace *Workspace, isDefault bool) (err erro
 
 // UpdateWorkspace updates a workspace
 func (c *Client) UpdateWorkspace(name string, workspace *Workspace) (err error) {
-	payload, _ := json.Marshal(workspace)
+	payload, _ := json.Marshal(map[string]*Workspace{
+		"workspace": workspace,
+	})
+
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/workspaces/%s", name), bytes.NewBuffer(payload))
 	if err != nil {
 		return

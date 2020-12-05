@@ -207,11 +207,13 @@ func TestCreateWorkspaceSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload *Workspace
+		var payload map[string]*Workspace
 		err = json.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, &Workspace{
-			Name: "foo",
+		assert.Equal(t, payload, map[string]*Workspace{
+			"workspace": &Workspace{
+				Name: "foo",
+			},
 		})
 
 		w.WriteHeader(201)
@@ -283,12 +285,14 @@ func TestUpdateWorkspaceSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload *Workspace
+		var payload map[string]*Workspace
 		err = json.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, &Workspace{
-			Name:     "foo",
-			Isolated: true,
+		assert.Equal(t, payload, map[string]*Workspace{
+			"workspace": &Workspace{
+				Name:     "foo",
+				Isolated: true,
+			},
 		})
 
 		w.WriteHeader(200)
