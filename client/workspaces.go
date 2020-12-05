@@ -85,10 +85,8 @@ func (c *Client) GetWorkspace(name string) (workspace *Workspace, err error) {
 }
 
 // CreateWorkspace creates a workspace
-func (c *Client) CreateWorkspace(name string, isDefault bool) (err error) {
-	payload, _ := json.Marshal(&Workspace{
-		Name: name,
-	})
+func (c *Client) CreateWorkspace(workspace *Workspace, isDefault bool) (err error) {
+	payload, _ := json.Marshal(&workspace)
 	statusCode, body, err := c.doRequest("POST", fmt.Sprintf("/workspaces?default=%t", isDefault), bytes.NewBuffer(payload))
 	if err != nil {
 		return

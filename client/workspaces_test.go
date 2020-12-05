@@ -224,7 +224,10 @@ func TestCreateWorkspaceSuccess(t *testing.T) {
 		HTTPClient: &http.Client{},
 	}
 
-	err := cli.CreateWorkspace("foo", true)
+	err := cli.CreateWorkspace(&Workspace{
+		Name:     "foo",
+		Isolated: false,
+	}, true)
 
 	assert.Nil(t, err)
 }
@@ -244,7 +247,9 @@ func TestCreateWorkspaceNotFound(t *testing.T) {
 		HTTPClient: &http.Client{},
 	}
 
-	err := cli.CreateWorkspace("foo", true)
+	err := cli.CreateWorkspace(&Workspace{
+		Name: "foo",
+	}, true)
 
 	assert.Error(t, err, "Unauthorized")
 }
@@ -264,7 +269,9 @@ func TestCreateWorkspaceUnknownError(t *testing.T) {
 		HTTPClient: &http.Client{},
 	}
 
-	err := cli.CreateWorkspace("foo", true)
+	err := cli.CreateWorkspace(&Workspace{
+		Name: "foo",
+	}, true)
 
 	assert.Error(t, err, "Unknown error: 418 - I'm a teapot!")
 }
