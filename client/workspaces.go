@@ -8,17 +8,17 @@ import (
 
 // WorkspaceRef is a reference to a Workspace
 type WorkspaceRef struct {
-	Name string
-	Href string
+	Name string `json:"name"`
+	Href string `json:"href"`
 }
 
 // Workspace is a Geoserver object
 type Workspace struct {
-	Name           string
-	Isolated       bool
-	DataStores     string
-	CoverageStores string
-	WmsStores      string
+	Name           string `json:"name"`
+	Isolated       bool   `json:"isolated"`
+	DataStores     string `json:"datastores"`
+	CoverageStores string `json:"coveragestores"`
+	WmsStores      string `json:"wmsstores"`
 }
 
 // GetWorkspaces returns the list of the workspaces
