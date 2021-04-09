@@ -2,36 +2,36 @@ package client
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 )
 
 // DatastoreRef is a reference to a Datastore
-type DatastoreRef struct {
-	Name string `json:"name"`
-	Href string `json:"href"`
+type DatastoreReference struct {
+	Name string `xml:"name"`
+}
+
+// Datastores is a list of datastore reference
+type Datastores struct {
+	XMLName xml.Name              `xml:"dataStores"`
+	List    []*DatastoreReference `xml:"dataStore"`
+}
+
+// DatastoreConnectionParameter is a datastore connection parameter
+type DatastoreConnectionParameter struct {
+	Key   string `xml:"key,attr"`
+	Value string `xml:",chardata"`
 }
 
 // Datastore is a Geoserver object
 type Datastore struct {
-	Name                 string                         `json:"name"`
-	Description          string                         `json:"description"`
-	Enabled              bool                           `json:"enabled"`
-	Workspace            *WorkspaceRef                  `json:"workspace"`
-	ConnectionParameters *DatastoreConnectionParameters `json:"connectionParameters"`
-	Default              bool                           `json:"__default"`
-	FeatureTypes         string                         `json:"featureTypes"`
-}
-
-// DatastoreConnectionParameters contains the list of parameters of a connection to a datasource
-type DatastoreConnectionParameters struct {
-	Entries []*DatastoreEntry `json:"entry"`
-}
-
-// Entry is Datastore object
-type DatastoreEntry struct {
-	Key   string `json:"@key"`
-	Value string `json:"$"`
+	XMLName              xml.Name                        `xml:"dataStore"`
+	Name                 string                          `xml:"name"`
+	Description          string                          `xml:"description"`
+	Enabled              bool                            `xml:"enabled"`
+	Workspace            *WorkspaceReference             `xml:"workspace"`
+	ConnectionParameters []*DatastoreConnectionParameter `xml:"connectionParameters>entry"`
+	Default              bool                            `xml:"__default"`
 }
 
 // GetDatastores returns the list of the datastores
@@ -43,21 +43,21 @@ func (c *Client) GetDatastores(workspace string) (datastores []*Datastore, err e
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 200:
 		break
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 
-	var data map[string]map[string][]*DatastoreRef
-	if err := json.Unmarshal([]byte(body), &data); err != nil {
+	var data Datastores
+	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return datastores, nil
 	}
 
-	for _, datastoreRef := range data["dataStores"]["dataStore"] {
+	for _, datastoreRef := range data.List {
 		datastore, err := c.GetDatastore(workspace, datastoreRef.Name)
 		if err != nil {
 			return datastores, err
@@ -78,33 +78,31 @@ func (c *Client) GetDatastore(workspace, name string) (datastore *Datastore, err
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 200:
 		break
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 
-	var data map[string]*Datastore
-	if err := json.Unmarshal([]byte(body), &data); err != nil {
+	var data Datastore
+	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return datastore, err
 	}
 
-	datastore = data["dataStore"]
+	datastore = &data
 
 	return
 }
 
 // CreateDatastore creates a datastore
 func (c *Client) CreateDatastore(workspace string, datastore *Datastore) (err error) {
-	payload, _ := json.Marshal(map[string]*Datastore{
-		"dataStore": datastore,
-	})
+	payload, _ := xml.Marshal(&datastore)
 	statusCode, body, err := c.doRequest("POST", fmt.Sprintf("/workspaces/%s/datastores", workspace), bytes.NewBuffer(payload))
 	if err != nil {
 		return
@@ -112,21 +110,19 @@ func (c *Client) CreateDatastore(workspace string, datastore *Datastore) (err er
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 201:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }
 
 // UpdateDatastore updates a datastore
 func (c *Client) UpdateDatastore(workspaceName, datastoreName string, datastore *Datastore) (err error) {
-	payload, _ := json.Marshal(map[string]*Datastore{
-		"dataStore": datastore,
-	})
+	payload, _ := xml.Marshal(&datastore)
 
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/workspaces/%s/datastores/%s", workspaceName, datastoreName), bytes.NewBuffer(payload))
 	if err != nil {
@@ -135,18 +131,18 @@ func (c *Client) UpdateDatastore(workspaceName, datastoreName string, datastore 
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 405:
-		err = fmt.Errorf("Forbidden")
+		err = fmt.Errorf("forbidden")
 		return
 	case 200:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }
@@ -160,21 +156,21 @@ func (c *Client) DeleteDatastore(workspaceName, datastoreName string, recurse bo
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 403:
-		err = fmt.Errorf("Workspace is not empty")
+		err = fmt.Errorf("workspace is not empty")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 405:
-		err = fmt.Errorf("Forbidden")
+		err = fmt.Errorf("forbidden")
 		return
 	case 200:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }

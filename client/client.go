@@ -32,8 +32,8 @@ func (c *Client) doRequest(method, path string, data io.Reader) (statusCode int,
 	if err != nil {
 		return
 	}
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Content-Type", "application/xml")
+	request.Header.Set("Accept", "application/xml")
 	if c.Username != "" && c.Password != "" {
 		request.SetBasicAuth(c.Username, c.Password)
 	}

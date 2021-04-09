@@ -1,7 +1,7 @@
 package client
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -17,16 +17,11 @@ func TestGetFeatureTypesNoDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureTypes": {
-				"featureType": [
-					{
-						"name": "toto",
-						"href": "http:\/\/localhost:8080"
-					}
-				] 
-			}
-		}
+		<featureTypes>
+			<featureType>
+				<name>toto</name>
+			</featureType>
+		</featureTypes>
 		`))
 	})
 	mux.HandleFunc("/workspaces/foo/featuretypes/toto", func(w http.ResponseWriter, r *http.Request) {
@@ -34,11 +29,9 @@ func TestGetFeatureTypesNoDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureType": {
-				"name": "toto"
-			}
-		}
+		<featureType>
+			<name>toto</name>
+		</featureType>
 		`))
 	})
 
@@ -47,6 +40,10 @@ func TestGetFeatureTypesNoDatastoreSuccess(t *testing.T) {
 
 	expectedResult := []*FeatureType{
 		&FeatureType{
+			XMLName: xml.Name{
+				Space: "",
+				Local: "featureType",
+			},
 			Name: "toto",
 		},
 	}
@@ -69,16 +66,11 @@ func TestGetFeatureTypesInDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureTypes": {
-				"featureType": [
-					{
-						"name": "toto",
-						"href": "http:\/\/localhost:8080"
-					}
-				] 
-			}
-		}
+		<featureTypes>
+			<featureType>
+				<name>toto</name>
+			</featureType>
+		</featureTypes>
 		`))
 	})
 	mux.HandleFunc("/workspaces/foo/datastores/bar/featuretypes/toto", func(w http.ResponseWriter, r *http.Request) {
@@ -86,11 +78,9 @@ func TestGetFeatureTypesInDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureType": {
-				"name": "toto"
-			}
-		}
+		<featureType>
+			<name>toto</name>
+		</featureType>
 		`))
 	})
 
@@ -99,6 +89,9 @@ func TestGetFeatureTypesInDatastoreSuccess(t *testing.T) {
 
 	expectedResult := []*FeatureType{
 		&FeatureType{
+			XMLName: xml.Name{
+				Local: "featureType",
+			},
 			Name: "toto",
 		},
 	}
@@ -121,124 +114,83 @@ func TestGetFeatureTypeNoDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureType": {
-			  "name": "toto",
-			  "nativeName": "toto",
-			  "namespace": {
-				"name": "tiger",
-				"href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
-			  },
-			  "title": "Manhattan (NY) points of interest",
-			  "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-			  "keywords": {
-				"string": [
-				  "poi",
-				  "Manhattan",
-				  "DS_poi",
-				  "points_of_interest",
-				  "sampleKeyword\\@language=ab\\;",
-				  "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				  "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
-				]
-			  },
-			  "metadataLinks": {
-				"metadataLink": [
-				  {
-					"type": "text/plain",
-					"metadataType": "FGDC",
-					"content": "www.google.com"
-				  }
-				]
-			  },
-			  "dataLinks": {
-				"org.geoserver.catalog.impl.DataLinkInfoImpl": [
-				  {
-					"type": "text/plain",
-					"content": "http://www.google.com"
-				  }
-				]
-			  },
-			  "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
-			  "srs": "EPSG:4326",
-			  "nativeBoundingBox": {
-				"minx": -74.0118315772888,
-				"maxx": -74.00153046439813,
-				"miny": 40.70754683896324,
-				"maxy": 40.719885123828675,
-				"crs": "EPSG:4326"
-			  },
-			  "latLonBoundingBox": {
-				"minx": -74.0118315772888,
-				"maxx": -74.00857344353275,
-				"miny": 40.70754683896324,
-				"maxy": 40.711945649065406,
-				"crs": "EPSG:4326"
-			  },
-			  "projectionPolicy": "REPROJECT_TO_DECLARED",
-			  "enabled": true,
-			  "metadata": {
-				"entry": [
-				  {
-					"@key": "kml.regionateStrategy",
-					"$": "external-sorting"
-				  },
-				  {
-					"@key": "kml.regionateFeatureLimit",
-					"$": "15"
-				  },
-				  {
-					"@key": "cacheAgeMax",
-					"$": "3000"
-				  },
-				  {
-					"@key": "cachingEnabled",
-					"$": "true"
-				  },
-				  {
-					"@key": "kml.regionateAttribute",
-					"$": "NAME"
-				  },
-				  {
-					"@key": "indexingEnabled",
-					"$": "false"
-				  },
-				  {
-					"@key": "dirName",
-					"$": "DS_poi_poi"
-				  }
-				]
-			  },
-			  "store": {
-				"@class": "dataStore",
-				"name": "tiger:nyc",
-				"href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
-			  },
-			  "cqlFilter": "INCLUDE",
-			  "maxFeatures": 100,
-			  "numDecimals": 6,
-			  "responseSRS": {
-				"string": [
-				  4326
-				]
-			  },
-			  "overridingServiceSRS": true,
-			  "skipNumberMatched": true,
-			  "circularArcPresent": true,
-			  "linearizationTolerance": 10,
-			  "attributes": {
-				"attribute": [
-				  {
-					"name": "the_geom",
-					"minOccurs": 0,
-					"maxOccurs": 1,
-					"nillable": true,
-					"binding": "org.locationtech.jts.geom.Point"
-				  }
-				]
-			  }
-			  }
-		}
+		<featureType>
+			<name>poi</name>
+			<nativeName>poi</nativeName>
+			<namespace>
+				<name>tiger</name>
+				<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+			</namespace>
+			<title>Manhattan (NY) points of interest</title>
+			<abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+			<keywords>
+				<string>poi</string>
+				<string>Manhattan</string>
+				<string>DS_poi</string>
+				<string>points_of_interest</string>
+				<string>fred\@language=ab\;</string>
+				<string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
+				<string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
+			</keywords>
+			<metadataLinks>
+				<metadataLink>
+					<type>text/plain</type>
+					<metadataType>FGDC</metadataType>
+					<content>http://www.google.com</content>
+				</metadataLink>
+			</metadataLinks>
+			<dataLinks>
+				<org.geoserver.catalog.impl.DataLinkInfoImpl>
+					<type>text/plain</type>
+					<content>http://www.google.com</content>
+				</org.geoserver.catalog.impl.DataLinkInfoImpl>
+			</dataLinks>
+			<nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+			<srs>EPSG:4326</srs>
+			<nativeBoundingBox>
+				<minx>-74.0118315772888</minx>
+				<maxx>-74.00153046439813</maxx>
+				<miny>40.70754683896324</miny>
+				<maxy>40.719885123828675</maxy>
+				<crs>EPSG:4326</crs>
+			</nativeBoundingBox>
+			<latLonBoundingBox>
+				<minx>-74.0118315772888</minx>
+				<maxx>-74.00857344353275</maxx>
+				<miny>40.70754683896324</miny>
+				<maxy>40.711945649065406</maxy>
+				<crs>EPSG:4326</crs>
+			</latLonBoundingBox>
+			<projectionPolicy>NONE</projectionPolicy>
+			<enabled>true</enabled>
+			<metadata>
+				<entry key="time"><dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo></entry>
+				<entry key="cachingEnabled">true</entry>
+			</metadata>
+			<store class="dataStore">
+				<name>tiger:nyc</name>
+				<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
+			</store>
+			<cqlFilter>INCLUDE</cqlFilter>
+			<maxFeatures>100</maxFeatures>
+			<numDecimals>6</numDecimals>
+			<responseSRS>
+				<string>4326</string>
+			</responseSRS>
+			<overridingServiceSRS>true</overridingServiceSRS>
+			<skipNumberMatched>true</skipNumberMatched>
+			<circularArcPresent>true</circularArcPresent>
+			<linearizationTolerance>10</linearizationTolerance>
+			<attributes>
+				<attribute>
+					<name>the_geom</name>
+					<minOccurs>0</minOccurs>
+					<maxOccurs>1</maxOccurs>
+					<nillable>true</nillable>
+					<binding>org.locationtech.jts.geom.Point</binding>
+				</attribute>
+			</attributes>
+		</featureType>
 		`))
 	})
 
@@ -246,24 +198,26 @@ func TestGetFeatureTypeNoDatastoreSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := &FeatureType{
-		Name:       "toto",
-		NativeName: "toto",
+		XMLName: xml.Name{
+			Local: "featureType",
+		},
+		Name:       "poi",
+		NativeName: "poi",
 		Title:      "Manhattan (NY) points of interest",
 		Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-		Keywords: map[string][]string{
-			"string": []string{
+		Keywords: FeatureTypeKeywords{
+			Keywords: []string{
 				"poi",
 				"Manhattan",
 				"DS_poi",
 				"points_of_interest",
-				"sampleKeyword\\@language=ab\\;",
-				"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
+				"fred\\@language=ab\\;",
+				"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+				"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 			},
 		},
-		NativeCRS: CRSWrapper{
-			Class: "",
-			Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		NativeCRS: FeatureTypeCRS{
+			Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
 		},
 		SRS: "EPSG:4326",
 		NativeBoundingBox: BoundingBox{
@@ -271,8 +225,7 @@ func TestGetFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00153046439813,
 			MinY: 40.70754683896324,
 			MaxY: 40.719885123828675,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
@@ -281,22 +234,29 @@ func TestGetFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00857344353275,
 			MinY: 40.70754683896324,
 			MaxY: 40.711945649065406,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
-		ProjectionPolicy: "REPROJECT_TO_DECLARED",
+		ProjectionPolicy: "NONE",
 		Enabled:          true,
-		Attributes: FeatureTypeAttributesList{
-			Attribute: []*FeatureTypeAttribute{
-				&FeatureTypeAttribute{
-					Name:      "the_geom",
-					MinOccurs: 0,
-					MaxOccurs: 1,
-					Nillable:  true,
-					Binding:   "org.locationtech.jts.geom.Point",
-				},
+		Metadata: []*FeatureTypeMetadata{
+			&FeatureTypeMetadata{
+				Key:   "time",
+				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
+			},
+			&FeatureTypeMetadata{
+				Key:   "cachingEnabled",
+				Value: "true",
+			},
+		},
+		Attributes: []*FeatureTypeAttribute{
+			&FeatureTypeAttribute{
+				Name:      "the_geom",
+				MinOccurs: 0,
+				MaxOccurs: 1,
+				Nillable:  true,
+				Binding:   "org.locationtech.jts.geom.Point",
 			},
 		},
 	}
@@ -319,122 +279,83 @@ func TestGetFeatureTypeInDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"featureType": {
-			  "name": "toto",
-			  "nativeName": "toto",
-			  "namespace": {
-				"name": "tiger",
-				"href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
-			  },
-			  "title": "Manhattan (NY) points of interest",
-			  "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-			  "keywords": {
-				"string": [
-				  "poi",
-				  "Manhattan",
-				  "DS_poi",
-				  "points_of_interest",
-				  "sampleKeyword\\@language=ab\\;",
-				  "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				  "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
-				]
-			  },
-			  "metadataLinks": {
-				"metadataLink": [
-				  {
-					"type": "text/plain",
-					"metadataType": "FGDC",
-					"content": "www.google.com"
-				  }
-				]
-			  },
-			  "dataLinks": {
-				"org.geoserver.catalog.impl.DataLinkInfoImpl": [
-				  {
-					"type": "text/plain",
-					"content": "http://www.google.com"
-				  }
-				]
-			  },
-			  "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
-			  "srs": "EPSG:4326",
-			  "nativeBoundingBox": {
-				"minx": -74.0118315772888,
-				"maxx": -74.00153046439813,
-				"miny": 40.70754683896324,
-				"maxy": 40.719885123828675,
-				"crs": "EPSG:4326"
-			  },
-			  "latLonBoundingBox": {
-				"minx": -74.0118315772888,
-				"maxx": -74.00857344353275,
-				"miny": 40.70754683896324,
-				"maxy": 40.711945649065406,
-				"crs": "EPSG:4326"
-			  },
-			  "projectionPolicy": "REPROJECT_TO_DECLARED",
-			  "enabled": true,
-			  "metadata": {
-				"entry": [
-				  {
-					"@key": "kml.regionateStrategy",
-					"$": "external-sorting"
-				  },
-				  {
-					"@key": "kml.regionateFeatureLimit",
-					"$": "15"
-				  },
-				  {
-					"@key": "cacheAgeMax",
-					"$": "3000"
-				  },
-				  {
-					"@key": "cachingEnabled",
-					"$": "true"
-				  },
-				  {
-					"@key": "kml.regionateAttribute",
-					"$": "NAME"
-				  },
-				  {
-					"@key": "indexingEnabled",
-					"$": "false"
-				  },
-				  {
-					"@key": "dirName",
-					"$": "DS_poi_poi"
-				  }
-				]
-			  },
-			  "store": {
-				"@class": "dataStore",
-				"name": "tiger:nyc",
-				"href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
-			  },
-			  "cqlFilter": "INCLUDE",
-			  "maxFeatures": 100,
-			  "numDecimals": 6,
-			  "responseSRS": {
-				"string": [
-				  4326
-				]
-			  },
-			  "overridingServiceSRS": true,
-			  "skipNumberMatched": true,
-			  "circularArcPresent": true,
-			  "linearizationTolerance": 10,
-			  "attributes": {
-				"attribute": {
-					"name": "the_geom",
-					"minOccurs": 0,
-					"maxOccurs": 1,
-					"nillable": true,
-					"binding": "org.locationtech.jts.geom.Point"
-				  }
-			  }
-		  }
-		}
+		<featureType>
+			<name>poi</name>
+			<nativeName>poi</nativeName>
+			<namespace>
+				<name>tiger</name>
+				<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+			</namespace>
+			<title>Manhattan (NY) points of interest</title>
+			<abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+			<keywords>
+				<string>poi</string>
+				<string>Manhattan</string>
+				<string>DS_poi</string>
+				<string>points_of_interest</string>
+				<string>fred\@language=ab\;</string>
+				<string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
+				<string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
+			</keywords>
+			<metadataLinks>
+				<metadataLink>
+					<type>text/plain</type>
+					<metadataType>FGDC</metadataType>
+					<content>http://www.google.com</content>
+				</metadataLink>
+			</metadataLinks>
+			<dataLinks>
+				<org.geoserver.catalog.impl.DataLinkInfoImpl>
+					<type>text/plain</type>
+					<content>http://www.google.com</content>
+				</org.geoserver.catalog.impl.DataLinkInfoImpl>
+			</dataLinks>
+			<nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+			<srs>EPSG:4326</srs>
+			<nativeBoundingBox>
+				<minx>-74.0118315772888</minx>
+				<maxx>-74.00153046439813</maxx>
+				<miny>40.70754683896324</miny>
+				<maxy>40.719885123828675</maxy>
+				<crs>EPSG:4326</crs>
+			</nativeBoundingBox>
+			<latLonBoundingBox>
+				<minx>-74.0118315772888</minx>
+				<maxx>-74.00857344353275</maxx>
+				<miny>40.70754683896324</miny>
+				<maxy>40.711945649065406</maxy>
+				<crs>EPSG:4326</crs>
+			</latLonBoundingBox>
+			<projectionPolicy>NONE</projectionPolicy>
+			<enabled>true</enabled>
+			<metadata>
+				<entry key="time"><dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo></entry>
+				<entry key="cachingEnabled">true</entry>
+			</metadata>
+			<store class="dataStore">
+				<name>tiger:nyc</name>
+				<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
+			</store>
+			<cqlFilter>INCLUDE</cqlFilter>
+			<maxFeatures>100</maxFeatures>
+			<numDecimals>6</numDecimals>
+			<responseSRS>
+				<string>4326</string>
+			</responseSRS>
+			<overridingServiceSRS>true</overridingServiceSRS>
+			<skipNumberMatched>true</skipNumberMatched>
+			<circularArcPresent>true</circularArcPresent>
+			<linearizationTolerance>10</linearizationTolerance>
+			<attributes>
+				<attribute>
+					<name>the_geom</name>
+					<minOccurs>0</minOccurs>
+					<maxOccurs>1</maxOccurs>
+					<nillable>true</nillable>
+					<binding>org.locationtech.jts.geom.Point</binding>
+				</attribute>
+			</attributes>
+		</featureType>
 		`))
 	})
 
@@ -442,24 +363,26 @@ func TestGetFeatureTypeInDatastoreSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := &FeatureType{
-		Name:       "toto",
-		NativeName: "toto",
+		XMLName: xml.Name{
+			Local: "featureType",
+		},
+		Name:       "poi",
+		NativeName: "poi",
 		Title:      "Manhattan (NY) points of interest",
 		Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-		Keywords: map[string][]string{
-			"string": []string{
+		Keywords: FeatureTypeKeywords{
+			Keywords: []string{
 				"poi",
 				"Manhattan",
 				"DS_poi",
 				"points_of_interest",
-				"sampleKeyword\\@language=ab\\;",
-				"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
+				"fred\\@language=ab\\;",
+				"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+				"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 			},
 		},
-		NativeCRS: CRSWrapper{
-			Class: "",
-			Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		NativeCRS: FeatureTypeCRS{
+			Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
 		},
 		SRS: "EPSG:4326",
 		NativeBoundingBox: BoundingBox{
@@ -467,8 +390,7 @@ func TestGetFeatureTypeInDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00153046439813,
 			MinY: 40.70754683896324,
 			MaxY: 40.719885123828675,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
@@ -477,22 +399,29 @@ func TestGetFeatureTypeInDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00857344353275,
 			MinY: 40.70754683896324,
 			MaxY: 40.711945649065406,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
-		ProjectionPolicy: "REPROJECT_TO_DECLARED",
+		ProjectionPolicy: "NONE",
 		Enabled:          true,
-		Attributes: FeatureTypeAttributesList{
-			Attribute: []*FeatureTypeAttribute{
-				&FeatureTypeAttribute{
-					Name:      "the_geom",
-					MinOccurs: 0,
-					MaxOccurs: 1,
-					Nillable:  true,
-					Binding:   "org.locationtech.jts.geom.Point",
-				},
+		Metadata: []*FeatureTypeMetadata{
+			&FeatureTypeMetadata{
+				Key:   "time",
+				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
+			},
+			&FeatureTypeMetadata{
+				Key:   "cachingEnabled",
+				Value: "true",
+			},
+		},
+		Attributes: []*FeatureTypeAttribute{
+			&FeatureTypeAttribute{
+				Name:      "the_geom",
+				MinOccurs: 0,
+				MaxOccurs: 1,
+				Nillable:  true,
+				Binding:   "org.locationtech.jts.geom.Point",
 			},
 		},
 	}
@@ -578,53 +507,70 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*FeatureType
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *FeatureType
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*FeatureType{
-			"featureType": &FeatureType{
-				Name:       "toto",
-				NativeName: "toto",
-				Title:      "Manhattan (NY) points of interest",
-				Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-				Keywords: map[string][]string{
-					"string": []string{
-						"poi",
-						"Manhattan",
-						"DS_poi",
-						"points_of_interest",
-						"sampleKeyword\\@language=ab\\;",
-						"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-						"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
-					},
+		assert.Equal(t, payload, &FeatureType{
+			XMLName: xml.Name{
+				Local: "featureType",
+			},
+			Name:       "poi",
+			NativeName: "poi",
+			Title:      "Manhattan (NY) points of interest",
+			Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+			Keywords: FeatureTypeKeywords{
+				Keywords: []string{
+					"poi",
+					"Manhattan",
+					"DS_poi",
+					"points_of_interest",
+					"fred\\@language=ab\\;",
+					"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+					"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 				},
-				NativeCRS: CRSWrapper{
-					Class: "",
-					Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			NativeCRS: FeatureTypeCRS{
+				Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			SRS: "EPSG:4326",
+			NativeBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00153046439813,
+				MinY: 40.70754683896324,
+				MaxY: 40.719885123828675,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				SRS: "EPSG:4326",
-				NativeBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00153046439813,
-					MinY: 40.70754683896324,
-					MaxY: 40.719885123828675,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			LatLonBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00857344353275,
+				MinY: 40.70754683896324,
+				MaxY: 40.711945649065406,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				LatLonBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00857344353275,
-					MinY: 40.70754683896324,
-					MaxY: 40.711945649065406,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			ProjectionPolicy: "NONE",
+			Enabled:          true,
+			Metadata: []*FeatureTypeMetadata{
+				&FeatureTypeMetadata{
+					Key:   "time",
+					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				ProjectionPolicy: "REPROJECT_TO_DECLARED",
-				Enabled:          true,
+				&FeatureTypeMetadata{
+					Key:   "cachingEnabled",
+					Value: "true",
+				},
+			},
+			Attributes: []*FeatureTypeAttribute{
+				&FeatureTypeAttribute{
+					Name:      "the_geom",
+					MinOccurs: 0,
+					MaxOccurs: 1,
+					Nillable:  true,
+					Binding:   "org.locationtech.jts.geom.Point",
+				},
 			},
 		})
 
@@ -639,24 +585,26 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 	}
 
 	err := cli.CreateFeatureType("foo", "", &FeatureType{
-		Name:       "toto",
-		NativeName: "toto",
+		XMLName: xml.Name{
+			Local: "featureType",
+		},
+		Name:       "poi",
+		NativeName: "poi",
 		Title:      "Manhattan (NY) points of interest",
 		Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-		Keywords: map[string][]string{
-			"string": []string{
+		Keywords: FeatureTypeKeywords{
+			Keywords: []string{
 				"poi",
 				"Manhattan",
 				"DS_poi",
 				"points_of_interest",
-				"sampleKeyword\\@language=ab\\;",
-				"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
+				"fred\\@language=ab\\;",
+				"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+				"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 			},
 		},
-		NativeCRS: CRSWrapper{
-			Class: "",
-			Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		NativeCRS: FeatureTypeCRS{
+			Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
 		},
 		SRS: "EPSG:4326",
 		NativeBoundingBox: BoundingBox{
@@ -664,8 +612,7 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00153046439813,
 			MinY: 40.70754683896324,
 			MaxY: 40.719885123828675,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
@@ -674,13 +621,31 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00857344353275,
 			MinY: 40.70754683896324,
 			MaxY: 40.711945649065406,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
-		ProjectionPolicy: "REPROJECT_TO_DECLARED",
+		ProjectionPolicy: "NONE",
 		Enabled:          true,
+		Metadata: []*FeatureTypeMetadata{
+			&FeatureTypeMetadata{
+				Key:   "time",
+				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
+			},
+			&FeatureTypeMetadata{
+				Key:   "cachingEnabled",
+				Value: "true",
+			},
+		},
+		Attributes: []*FeatureTypeAttribute{
+			&FeatureTypeAttribute{
+				Name:      "the_geom",
+				MinOccurs: 0,
+				MaxOccurs: 1,
+				Nillable:  true,
+				Binding:   "org.locationtech.jts.geom.Point",
+			},
+		},
 	})
 
 	assert.Nil(t, err)
@@ -693,53 +658,70 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*FeatureType
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *FeatureType
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*FeatureType{
-			"featureType": &FeatureType{
-				Name:       "toto",
-				NativeName: "toto",
-				Title:      "Manhattan (NY) points of interest",
-				Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-				Keywords: map[string][]string{
-					"string": []string{
-						"poi",
-						"Manhattan",
-						"DS_poi",
-						"points_of_interest",
-						"sampleKeyword\\@language=ab\\;",
-						"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-						"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
-					},
+		assert.Equal(t, payload, &FeatureType{
+			XMLName: xml.Name{
+				Local: "featureType",
+			},
+			Name:       "poi",
+			NativeName: "poi",
+			Title:      "Manhattan (NY) points of interest",
+			Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+			Keywords: FeatureTypeKeywords{
+				Keywords: []string{
+					"poi",
+					"Manhattan",
+					"DS_poi",
+					"points_of_interest",
+					"fred\\@language=ab\\;",
+					"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+					"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 				},
-				NativeCRS: CRSWrapper{
-					Class: "",
-					Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			NativeCRS: FeatureTypeCRS{
+				Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			SRS: "EPSG:4326",
+			NativeBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00153046439813,
+				MinY: 40.70754683896324,
+				MaxY: 40.719885123828675,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				SRS: "EPSG:4326",
-				NativeBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00153046439813,
-					MinY: 40.70754683896324,
-					MaxY: 40.719885123828675,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			LatLonBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00857344353275,
+				MinY: 40.70754683896324,
+				MaxY: 40.711945649065406,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				LatLonBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00857344353275,
-					MinY: 40.70754683896324,
-					MaxY: 40.711945649065406,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			ProjectionPolicy: "NONE",
+			Enabled:          true,
+			Metadata: []*FeatureTypeMetadata{
+				&FeatureTypeMetadata{
+					Key:   "time",
+					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				ProjectionPolicy: "REPROJECT_TO_DECLARED",
-				Enabled:          true,
+				&FeatureTypeMetadata{
+					Key:   "cachingEnabled",
+					Value: "true",
+				},
+			},
+			Attributes: []*FeatureTypeAttribute{
+				&FeatureTypeAttribute{
+					Name:      "the_geom",
+					MinOccurs: 0,
+					MaxOccurs: 1,
+					Nillable:  true,
+					Binding:   "org.locationtech.jts.geom.Point",
+				},
 			},
 		})
 
@@ -754,24 +736,26 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 	}
 
 	err := cli.CreateFeatureType("foo", "bar", &FeatureType{
-		Name:       "toto",
-		NativeName: "toto",
+		XMLName: xml.Name{
+			Local: "featureType",
+		},
+		Name:       "poi",
+		NativeName: "poi",
 		Title:      "Manhattan (NY) points of interest",
 		Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-		Keywords: map[string][]string{
-			"string": []string{
+		Keywords: FeatureTypeKeywords{
+			Keywords: []string{
 				"poi",
 				"Manhattan",
 				"DS_poi",
 				"points_of_interest",
-				"sampleKeyword\\@language=ab\\;",
-				"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
+				"fred\\@language=ab\\;",
+				"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+				"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 			},
 		},
-		NativeCRS: CRSWrapper{
-			Class: "",
-			Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		NativeCRS: FeatureTypeCRS{
+			Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
 		},
 		SRS: "EPSG:4326",
 		NativeBoundingBox: BoundingBox{
@@ -779,8 +763,7 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00153046439813,
 			MinY: 40.70754683896324,
 			MaxY: 40.719885123828675,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
@@ -789,13 +772,31 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00857344353275,
 			MinY: 40.70754683896324,
 			MaxY: 40.711945649065406,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
-		ProjectionPolicy: "REPROJECT_TO_DECLARED",
+		ProjectionPolicy: "NONE",
 		Enabled:          true,
+		Metadata: []*FeatureTypeMetadata{
+			&FeatureTypeMetadata{
+				Key:   "time",
+				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
+			},
+			&FeatureTypeMetadata{
+				Key:   "cachingEnabled",
+				Value: "true",
+			},
+		},
+		Attributes: []*FeatureTypeAttribute{
+			&FeatureTypeAttribute{
+				Name:      "the_geom",
+				MinOccurs: 0,
+				MaxOccurs: 1,
+				Nillable:  true,
+				Binding:   "org.locationtech.jts.geom.Point",
+			},
+		},
 	})
 
 	assert.Nil(t, err)
@@ -808,53 +809,70 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*FeatureType
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *FeatureType
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*FeatureType{
-			"featureType": &FeatureType{
-				Name:       "toto",
-				NativeName: "toto",
-				Title:      "Manhattan (NY) points of interest",
-				Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-				Keywords: map[string][]string{
-					"string": []string{
-						"poi",
-						"Manhattan",
-						"DS_poi",
-						"points_of_interest",
-						"sampleKeyword\\@language=ab\\;",
-						"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-						"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
-					},
+		assert.Equal(t, payload, &FeatureType{
+			XMLName: xml.Name{
+				Local: "featureType",
+			},
+			Name:       "poi",
+			NativeName: "poi",
+			Title:      "Manhattan (NY) points of interest",
+			Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+			Keywords: FeatureTypeKeywords{
+				Keywords: []string{
+					"poi",
+					"Manhattan",
+					"DS_poi",
+					"points_of_interest",
+					"fred\\@language=ab\\;",
+					"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+					"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 				},
-				NativeCRS: CRSWrapper{
-					Class: "",
-					Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			NativeCRS: FeatureTypeCRS{
+				Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			SRS: "EPSG:4326",
+			NativeBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00153046439813,
+				MinY: 40.70754683896324,
+				MaxY: 40.719885123828675,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				SRS: "EPSG:4326",
-				NativeBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00153046439813,
-					MinY: 40.70754683896324,
-					MaxY: 40.719885123828675,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			LatLonBoundingBox: BoundingBox{
+				MinX: -74.0118315772888,
+				MaxX: -74.00857344353275,
+				MinY: 40.70754683896324,
+				MaxY: 40.711945649065406,
+				CRS: FeatureTypeCRS{
+					Value: "EPSG:4326",
 				},
-				LatLonBoundingBox: BoundingBox{
-					MinX: -74.0118315772888,
-					MaxX: -74.00857344353275,
-					MinY: 40.70754683896324,
-					MaxY: 40.711945649065406,
-					CRS: CRSWrapper{
-						Class: "",
-						Value: "EPSG:4326",
-					},
+			},
+			ProjectionPolicy: "NONE",
+			Enabled:          true,
+			Metadata: []*FeatureTypeMetadata{
+				&FeatureTypeMetadata{
+					Key:   "time",
+					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				ProjectionPolicy: "REPROJECT_TO_DECLARED",
-				Enabled:          true,
+				&FeatureTypeMetadata{
+					Key:   "cachingEnabled",
+					Value: "true",
+				},
+			},
+			Attributes: []*FeatureTypeAttribute{
+				&FeatureTypeAttribute{
+					Name:      "the_geom",
+					MinOccurs: 0,
+					MaxOccurs: 1,
+					Nillable:  true,
+					Binding:   "org.locationtech.jts.geom.Point",
+				},
 			},
 		})
 
@@ -869,24 +887,26 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 	}
 
 	err := cli.UpdateFeatureType("foo", "", "toto", &FeatureType{
-		Name:       "toto",
-		NativeName: "toto",
+		XMLName: xml.Name{
+			Local: "featureType",
+		},
+		Name:       "poi",
+		NativeName: "poi",
 		Title:      "Manhattan (NY) points of interest",
 		Abstract:   "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-		Keywords: map[string][]string{
-			"string": []string{
+		Keywords: FeatureTypeKeywords{
+			Keywords: []string{
 				"poi",
 				"Manhattan",
 				"DS_poi",
 				"points_of_interest",
-				"sampleKeyword\\@language=ab\\;",
-				"area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-				"Привет\\@language=ru\\;\\@vocabulary=friendly\\;",
+				"fred\\@language=ab\\;",
+				"area of effect\\@language=bg\\;\\@vocabulary=Technical\\;",
+				"Привет\\@language=ru\\;\\@vocabulary=Friendly\\;",
 			},
 		},
-		NativeCRS: CRSWrapper{
-			Class: "",
-			Value: "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		NativeCRS: FeatureTypeCRS{
+			Value: "GEOGCS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], AUTHORITY[\"EPSG\",\"6326\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH], AUTHORITY[\"EPSG\",\"4326\"]]",
 		},
 		SRS: "EPSG:4326",
 		NativeBoundingBox: BoundingBox{
@@ -894,8 +914,7 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00153046439813,
 			MinY: 40.70754683896324,
 			MaxY: 40.719885123828675,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
@@ -904,13 +923,31 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			MaxX: -74.00857344353275,
 			MinY: 40.70754683896324,
 			MaxY: 40.711945649065406,
-			CRS: CRSWrapper{
-				Class: "",
+			CRS: FeatureTypeCRS{
 				Value: "EPSG:4326",
 			},
 		},
-		ProjectionPolicy: "REPROJECT_TO_DECLARED",
+		ProjectionPolicy: "NONE",
 		Enabled:          true,
+		Metadata: []*FeatureTypeMetadata{
+			&FeatureTypeMetadata{
+				Key:   "time",
+				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
+			},
+			&FeatureTypeMetadata{
+				Key:   "cachingEnabled",
+				Value: "true",
+			},
+		},
+		Attributes: []*FeatureTypeAttribute{
+			&FeatureTypeAttribute{
+				Name:      "the_geom",
+				MinOccurs: 0,
+				MaxOccurs: 1,
+				Nillable:  true,
+				Binding:   "org.locationtech.jts.geom.Point",
+			},
+		},
 	})
 
 	assert.Nil(t, err)

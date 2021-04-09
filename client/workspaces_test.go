@@ -1,7 +1,7 @@
 package client
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -17,20 +17,14 @@ func TestGetWorkspacesSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-		  "workspaces": {
-		  "workspace": [
-			{
-			 "name": "topp",
-			 "href": "http://localhost:8080/geoserver/rest/workspaces/topp.json"
-			},
-			{
-			  "name": "it.geosolutions",
-			  "href": "http://localhost:8080/geoserver/rest/workspaces/it.geosolutions.json"
-			}
-		  ]
-		  }
-		}
+		<workspaces>
+			<workspace>
+				<name>topp</name>
+			</workspace>
+			<workspace>
+				<name>it.geosolutions</name>
+			</workspace>
+		</workspaces>
 		`))
 	}))
 	defer testServer.Close()
@@ -104,23 +98,19 @@ func TestGetWorkspaceSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"workspace": {
-			  "name": "topp",
-			  "dataStores": "http://localhost:8080/geoserver/rest/workspaces/topp/datastores.json",
-			  "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.json",
-			  "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.json"
-			}
-		}
+		<workspace>
+  			<name>topp</name>
+  			<isolated>false</isolated>
+		</workspace>
 		`))
 	}))
 	defer testServer.Close()
 
 	expectedResult := &Workspace{
-		Name:           "topp",
-		DataStores:     "http://localhost:8080/geoserver/rest/workspaces/topp/datastores.json",
-		CoverageStores: "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.json",
-		WmsStores:      "http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.json",
+		XMLName: xml.Name{
+			Local: "workspace",
+		},
+		Name: "topp",
 	}
 
 	cli := &Client{
@@ -207,13 +197,14 @@ func TestCreateWorkspaceSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*Workspace
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *Workspace
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*Workspace{
-			"workspace": &Workspace{
-				Name: "foo",
+		assert.Equal(t, payload, &Workspace{
+			XMLName: xml.Name{
+				Local: "workspace",
 			},
+			Name: "foo",
 		})
 
 		w.WriteHeader(201)
@@ -285,14 +276,15 @@ func TestUpdateWorkspaceSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*Workspace
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *Workspace
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*Workspace{
-			"workspace": &Workspace{
-				Name:     "foo",
-				Isolated: true,
+		assert.Equal(t, payload, &Workspace{
+			XMLName: xml.Name{
+				Local: "workspace",
 			},
+			Name:     "foo",
+			Isolated: true,
 		})
 
 		w.WriteHeader(200)

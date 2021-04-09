@@ -1,7 +1,7 @@
 package client
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -17,16 +17,12 @@ func TestGetDatastoresSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"dataStores": {
-				"dataStore": [
-					{
-						"name":"sf",
-						"href":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.json"
-					}
-			  ]
-		  }
-		}
+		<dataStores>
+			<dataStore>
+				<name>sf</name>
+				<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.xml" type="application/xml"/>
+			</dataStore>
+		</dataStores>
 		`))
 	})
 	mux.HandleFunc("/workspaces/foo/datastores/sf", func(w http.ResponseWriter, r *http.Request) {
@@ -34,30 +30,22 @@ func TestGetDatastoresSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"dataStore":{
-				"name":"sf",
-				"enabled":true,
-				"workspace":{
-					"name":"foo",
-					"href":"http://localhost:8080/geoserver/rest/workspaces/foo.json"
-				},
-				"connectionParameters":{
-					"entry":[
-						{
-							"@key":"url",
-							"$":"file:data/sf"
-						},
-						{
-							"@key":"namespace",
-							"$":"http://www.openplans.org/spearfish"
-						}
-					]
-				},
-				"_default":false,
-				"featureTypes":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json"
-			}
-		}
+		<dataStore>
+			<name>sf</name>
+			<enabled>true</enabled>
+			<workspace>
+			  <name>foo</name>
+			  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/foo.xml" type="application/xml"/>
+			</workspace>
+			<connectionParameters>
+			  <entry key="url">file:data/sf</entry>
+			  <entry key="namespace">http://www.openplans.org/spearfish</entry>
+			</connectionParameters>
+			<__default>false</__default>
+			<featureTypes>
+			  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.xml" type="application/xml"/>
+			</featureTypes>
+		</dataStore>
 		`))
 	})
 
@@ -66,26 +54,25 @@ func TestGetDatastoresSuccess(t *testing.T) {
 
 	expectedResult := []*Datastore{
 		&Datastore{
+			XMLName: xml.Name{
+				Local: "dataStore",
+			},
 			Name:    "sf",
 			Enabled: true,
-			ConnectionParameters: &DatastoreConnectionParameters{
-				Entries: []*DatastoreEntry{
-					&DatastoreEntry{
-						Key:   "url",
-						Value: "file:data/sf",
-					},
-					&DatastoreEntry{
-						Key:   "namespace",
-						Value: "http://www.openplans.org/spearfish",
-					},
+			ConnectionParameters: []*DatastoreConnectionParameter{
+				&DatastoreConnectionParameter{
+					Key:   "url",
+					Value: "file:data/sf",
+				},
+				&DatastoreConnectionParameter{
+					Key:   "namespace",
+					Value: "http://www.openplans.org/spearfish",
 				},
 			},
-			Workspace: &WorkspaceRef{
+			Workspace: &WorkspaceReference{
 				Name: "foo",
-				Href: "http://localhost:8080/geoserver/rest/workspaces/foo.json",
 			},
-			Default:      false,
-			FeatureTypes: "http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json",
+			Default: false,
 		},
 	}
 
@@ -107,30 +94,22 @@ func TestGetDatastoreSuccess(t *testing.T) {
 
 		w.WriteHeader(200)
 		w.Write([]byte(`
-		{
-			"dataStore":{
-				"name":"sf",
-				"enabled":true,
-				"workspace":{
-					"name":"foo",
-					"href":"http://localhost:8080/geoserver/rest/workspaces/foo.json"
-				},
-				"connectionParameters":{
-					"entry":[
-						{
-							"@key":"url",
-							"$":"file:data/sf"
-						},
-						{
-							"@key":"namespace",
-							"$":"http://www.openplans.org/spearfish"
-						}
-					]
-				},
-				"_default":false,
-				"featureTypes":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json"
-			}
-		}
+		<dataStore>
+			<name>sf</name>
+			<enabled>true</enabled>
+			<workspace>
+			  <name>foo</name>
+			  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/foo.xml" type="application/xml"/>
+			</workspace>
+			<connectionParameters>
+			  <entry key="url">file:data/sf</entry>
+			  <entry key="namespace">http://www.openplans.org/spearfish</entry>
+			</connectionParameters>
+			<__default>false</__default>
+			<featureTypes>
+			  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.xml" type="application/xml"/>
+			</featureTypes>
+		</dataStore>
 		`))
 	})
 
@@ -138,26 +117,25 @@ func TestGetDatastoreSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := &Datastore{
+		XMLName: xml.Name{
+			Local: "dataStore",
+		},
 		Name:    "sf",
 		Enabled: true,
-		ConnectionParameters: &DatastoreConnectionParameters{
-			Entries: []*DatastoreEntry{
-				&DatastoreEntry{
-					Key:   "url",
-					Value: "file:data/sf",
-				},
-				&DatastoreEntry{
-					Key:   "namespace",
-					Value: "http://www.openplans.org/spearfish",
-				},
+		ConnectionParameters: []*DatastoreConnectionParameter{
+			&DatastoreConnectionParameter{
+				Key:   "url",
+				Value: "file:data/sf",
+			},
+			&DatastoreConnectionParameter{
+				Key:   "namespace",
+				Value: "http://www.openplans.org/spearfish",
 			},
 		},
-		Workspace: &WorkspaceRef{
+		Workspace: &WorkspaceReference{
 			Name: "foo",
-			Href: "http://localhost:8080/geoserver/rest/workspaces/foo.json",
 		},
-		Default:      false,
-		FeatureTypes: "http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json",
+		Default: false,
 	}
 
 	cli := &Client{
@@ -241,24 +219,23 @@ func TestCreateDatastoreSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*Datastore
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *Datastore
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*Datastore{
-			"dataStore": &Datastore{
-				Name:    "sf",
-				Enabled: true,
-				ConnectionParameters: &DatastoreConnectionParameters{
-					Entries: []*DatastoreEntry{
-						&DatastoreEntry{
-							Key:   "url",
-							Value: "file:data/sf",
-						},
-						&DatastoreEntry{
-							Key:   "namespace",
-							Value: "http://www.openplans.org/spearfish",
-						},
-					},
+		assert.Equal(t, payload, &Datastore{
+			XMLName: xml.Name{
+				Local: "dataStore",
+			},
+			Name:    "sf",
+			Enabled: true,
+			ConnectionParameters: []*DatastoreConnectionParameter{
+				&DatastoreConnectionParameter{
+					Key:   "url",
+					Value: "file:data/sf",
+				},
+				&DatastoreConnectionParameter{
+					Key:   "namespace",
+					Value: "http://www.openplans.org/spearfish",
 				},
 			},
 		})
@@ -276,16 +253,14 @@ func TestCreateDatastoreSuccess(t *testing.T) {
 	err := cli.CreateDatastore("foo", &Datastore{
 		Name:    "sf",
 		Enabled: true,
-		ConnectionParameters: &DatastoreConnectionParameters{
-			Entries: []*DatastoreEntry{
-				&DatastoreEntry{
-					Key:   "url",
-					Value: "file:data/sf",
-				},
-				&DatastoreEntry{
-					Key:   "namespace",
-					Value: "http://www.openplans.org/spearfish",
-				},
+		ConnectionParameters: []*DatastoreConnectionParameter{
+			&DatastoreConnectionParameter{
+				Key:   "url",
+				Value: "file:data/sf",
+			},
+			&DatastoreConnectionParameter{
+				Key:   "namespace",
+				Value: "http://www.openplans.org/spearfish",
 			},
 		},
 	})
@@ -300,24 +275,23 @@ func TestUpdateDatastoreSuccess(t *testing.T) {
 
 		rawBody, err := ioutil.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload map[string]*Datastore
-		err = json.Unmarshal(rawBody, &payload)
+		var payload *Datastore
+		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
-		assert.Equal(t, payload, map[string]*Datastore{
-			"dataStore": &Datastore{
-				Name:    "sf",
-				Enabled: true,
-				ConnectionParameters: &DatastoreConnectionParameters{
-					Entries: []*DatastoreEntry{
-						&DatastoreEntry{
-							Key:   "url",
-							Value: "file:data/sf",
-						},
-						&DatastoreEntry{
-							Key:   "namespace",
-							Value: "http://www.openplans.org/spearfish",
-						},
-					},
+		assert.Equal(t, payload, &Datastore{
+			XMLName: xml.Name{
+				Local: "dataStore",
+			},
+			Name:    "sf",
+			Enabled: true,
+			ConnectionParameters: []*DatastoreConnectionParameter{
+				&DatastoreConnectionParameter{
+					Key:   "url",
+					Value: "file:data/sf",
+				},
+				&DatastoreConnectionParameter{
+					Key:   "namespace",
+					Value: "http://www.openplans.org/spearfish",
 				},
 			},
 		})
@@ -335,16 +309,14 @@ func TestUpdateDatastoreSuccess(t *testing.T) {
 	err := cli.UpdateDatastore("foo", "sf", &Datastore{
 		Name:    "sf",
 		Enabled: true,
-		ConnectionParameters: &DatastoreConnectionParameters{
-			Entries: []*DatastoreEntry{
-				&DatastoreEntry{
-					Key:   "url",
-					Value: "file:data/sf",
-				},
-				&DatastoreEntry{
-					Key:   "namespace",
-					Value: "http://www.openplans.org/spearfish",
-				},
+		ConnectionParameters: []*DatastoreConnectionParameter{
+			&DatastoreConnectionParameter{
+				Key:   "url",
+				Value: "file:data/sf",
+			},
+			&DatastoreConnectionParameter{
+				Key:   "namespace",
+				Value: "http://www.openplans.org/spearfish",
 			},
 		},
 	})

@@ -2,23 +2,26 @@ package client
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 )
 
-// WorkspaceRef is a reference to a Workspace
-type WorkspaceRef struct {
-	Name string `json:"name"`
-	Href string `json:"href"`
+// WorkspaceReference is a reference to a Workspace
+type WorkspaceReference struct {
+	Name string `xml:"name"`
+}
+
+// Workspaces is a list of workspace reference
+type Workspaces struct {
+	XMLName xml.Name              `xml:"workspaces"`
+	List    []*WorkspaceReference `xml:"workspace"`
 }
 
 // Workspace is a Geoserver object
 type Workspace struct {
-	Name           string `json:"name"`
-	Isolated       bool   `json:"isolated"`
-	DataStores     string `json:"datastores"`
-	CoverageStores string `json:"coveragestores"`
-	WmsStores      string `json:"wmsstores"`
+	XMLName  xml.Name `xml:"workspace"`
+	Name     string   `xml:"name"`
+	Isolated bool     `xml:"isolated"`
 }
 
 // GetWorkspaces returns the list of the workspaces
@@ -30,21 +33,21 @@ func (c *Client) GetWorkspaces() (workspaces []*Workspace, err error) {
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 200:
 		break
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 
-	var data map[string]map[string][]*WorkspaceRef
-	if err := json.Unmarshal([]byte(body), &data); err != nil {
+	var data Workspaces
+	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return workspaces, nil
 	}
 
-	for _, workspaceRef := range data["workspaces"]["workspace"] {
+	for _, workspaceRef := range data.List {
 		workspaces = append(workspaces, &Workspace{
 			Name: workspaceRef.Name,
 		})
@@ -62,33 +65,31 @@ func (c *Client) GetWorkspace(name string) (workspace *Workspace, err error) {
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 200:
 		break
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 
-	var data map[string]*Workspace
-	if err := json.Unmarshal([]byte(body), &data); err != nil {
+	var data Workspace
+	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return workspace, nil
 	}
 
-	workspace = data["workspace"]
+	workspace = &data
 
 	return
 }
 
 // CreateWorkspace creates a workspace
 func (c *Client) CreateWorkspace(workspace *Workspace, isDefault bool) (err error) {
-	payload, _ := json.Marshal(map[string]*Workspace{
-		"workspace": workspace,
-	})
+	payload, _ := xml.Marshal(workspace)
 	statusCode, body, err := c.doRequest("POST", fmt.Sprintf("/workspaces?default=%t", isDefault), bytes.NewBuffer(payload))
 	if err != nil {
 		return
@@ -96,21 +97,19 @@ func (c *Client) CreateWorkspace(workspace *Workspace, isDefault bool) (err erro
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 201:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }
 
 // UpdateWorkspace updates a workspace
 func (c *Client) UpdateWorkspace(name string, workspace *Workspace) (err error) {
-	payload, _ := json.Marshal(map[string]*Workspace{
-		"workspace": workspace,
-	})
+	payload, _ := xml.Marshal(workspace)
 
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/workspaces/%s", name), bytes.NewBuffer(payload))
 	if err != nil {
@@ -119,18 +118,18 @@ func (c *Client) UpdateWorkspace(name string, workspace *Workspace) (err error) 
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 405:
-		err = fmt.Errorf("Forbidden")
+		err = fmt.Errorf("forbidden")
 		return
 	case 200:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }
@@ -144,21 +143,21 @@ func (c *Client) DeleteWorkspace(name string, recurse bool) (err error) {
 
 	switch statusCode {
 	case 401:
-		err = fmt.Errorf("Unauthorized")
+		err = fmt.Errorf("unauthorized")
 		return
 	case 403:
-		err = fmt.Errorf("Workspace is not empty")
+		err = fmt.Errorf("workspace is not empty")
 		return
 	case 404:
-		err = fmt.Errorf("Not Found")
+		err = fmt.Errorf("not found")
 		return
 	case 405:
-		err = fmt.Errorf("Forbidden")
+		err = fmt.Errorf("forbidden")
 		return
 	case 200:
 		return
 	default:
-		err = fmt.Errorf("Unknown error: %d - %s", statusCode, body)
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
 	}
 }
