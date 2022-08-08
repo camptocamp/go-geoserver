@@ -1,8 +1,10 @@
 package client
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
+	"strings"
 )
 
 // Style is a Geoserver object
@@ -12,20 +14,39 @@ type Styles struct {
 }
 
 type Style struct {
-	XMLName   xml.Name        `xml:"style"`
-	Name      string          `xml:"name"`
-	Workspace WorkspaceRef    `xml:"workspace"`
-	Format    string          `xml:"format"`
-	Version   LanguageVersion `xml:"languageVersion"`
-	FileName  string          `xml:"filename"`
+	XMLName   xml.Name         `xml:"style"`
+	Name      string           `xml:"name"`
+	Workspace *WorkspaceRef    `xml:"workspace,omitempty"`
+	Format    string           `xml:"format,omitempty"`
+	Version   *LanguageVersion `xml:"languageVersion,omitempty"`
+	FileName  string           `xml:"filename"`
 }
 
 type WorkspaceRef struct {
-	Name string `xml:"name"`
+	Name string `xml:"name,omitempty"`
 }
 
 type LanguageVersion struct {
-	Version string `xml:"version"`
+	Version string `xml:"version,omitempty"`
+}
+
+func (c *Client) GetHttpContentTypeFor(format string, version string) (contentType string) {
+	switch format {
+	case "sld":
+		if version == "1.0.0" {
+			return "application/vnd.ogc.sld+xml"
+		} else {
+			return "application/vnd.ogc.se+xml "
+		}
+	case "css":
+		return "application/vnd.geoserver.geocss+css"
+	case "yaml":
+		return "application/vnd.geoserver.ysld+yaml"
+	case "json":
+		return "application/vnd.geoserver.mbstyle+json "
+	default:
+		return "application/vnd.ogc.sld+xml"
+	}
 }
 
 // GetStyles returns all the styles
@@ -108,22 +129,6 @@ func (c *Client) GetStyle(workspace, name string) (style *Style, err error) {
 
 	style = &data
 
-	// Try to retrieve the style file based on the style format
-	switch style.Format {
-	case "sld":
-		endpoint += ".sld"
-		break
-	case "css":
-		endpoint += ".css"
-		break
-	case "yaml":
-		endpoint += ".yaml"
-		break
-	case "json":
-		endpoint += ".json"
-		break
-	}
-
 	return
 }
 
@@ -138,25 +143,7 @@ func (c *Client) GetStyleFile(workspace, name string, styleFormat string, format
 	}
 
 	// Try to retrieve the style file based on the style format
-	var contentType string
-	switch styleFormat {
-	case "sld":
-		if formatVersion == "1.0.0" {
-			contentType = "application/vnd.ogc.sld+xml"
-		} else {
-			contentType = "application/vnd.ogc.se+xml "
-		}
-		break
-	case "css":
-		contentType = "application/vnd.geoserver.geocss+css"
-		break
-	case "yaml":
-		contentType = "application/vnd.geoserver.ysld+yaml"
-		break
-	case "json":
-		contentType = "application/vnd.geoserver.mbstyle+json "
-		break
-	}
+	contentType := c.GetHttpContentTypeFor(styleFormat, formatVersion)
 
 	statusCode, styleFile, err := c.doTypedRequest("GET", endpoint, nil, contentType)
 	if err != nil {
@@ -178,4 +165,133 @@ func (c *Client) GetStyleFile(workspace, name string, styleFormat string, format
 	}
 
 	return styleFile, err
+}
+
+// CreateStyle creates a style
+func (c *Client) CreateStyle(workspace string, style *Style) (err error) {
+	var endpoint string
+
+	if workspace == "" {
+		endpoint = fmt.Sprintf("/styles")
+	} else {
+		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
+	}
+
+	style.XMLName = xml.Name{
+		Local: "style",
+	}
+	payload, err := xml.Marshal(style)
+	if err != nil {
+		return
+	}
+	statusCode, body, err := c.doFullyTypedRequest("POST", endpoint, bytes.NewBuffer(payload), "application/xml", "")
+
+	if err != nil {
+		return
+	}
+
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 201:
+		return
+	default:
+		err = fmt.Errorf("unknown error: %d - %s - %s", statusCode, body, string(payload))
+		return
+	}
+}
+
+// UpdateStyle creates a style
+func (c *Client) UpdateStyle(workspace string, style *Style, styleDefinition string) (err error) {
+	var endpoint string
+
+	if workspace == "" {
+		endpoint = fmt.Sprintf("/styles")
+	} else {
+		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
+	}
+
+	contentType := c.GetHttpContentTypeFor(style.Format, style.Version.Version)
+
+	statusCode, body, err := c.doFullyTypedRequest("POST", endpoint, strings.NewReader(styleDefinition), contentType, "")
+	if err != nil {
+		return
+	}
+
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 201:
+		return
+	default:
+		err = fmt.Errorf("unknown error: %d - %s - %s", statusCode, body, styleDefinition)
+		return
+	}
+}
+
+// UpdateStyle creates a style
+func (c *Client) UpdateStyleContent(workspace string, style *Style, styleDefinition string) (err error) {
+	var endpoint string
+
+	if workspace == "" {
+		endpoint = fmt.Sprintf("/styles/%s", style.Name)
+	} else {
+		endpoint = fmt.Sprintf("/workspaces/%s/styles/%s", workspace, style.Name)
+	}
+
+	contentType := c.GetHttpContentTypeFor(style.Format, style.Version.Version)
+
+	statusCode, body, err := c.doFullyTypedRequest("PUT", endpoint, strings.NewReader(styleDefinition), contentType, "")
+	if err != nil {
+		return
+	}
+
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 200:
+		return
+	default:
+		err = fmt.Errorf("unknown error: %d - %s - %s", statusCode, body, styleDefinition)
+		return
+	}
+}
+
+// Delete style
+func (c *Client) DeleteStyle(workspace string, style string, purge bool, recurse bool) (err error) {
+	var endpoint string
+
+	if workspace == "" {
+		endpoint = fmt.Sprintf("/styles/%s?purge=%t&recurse=%t", style, purge, recurse)
+	} else {
+		endpoint = fmt.Sprintf("/workspaces/%s/styles/%s?purge=%t&recurse=%t", workspace, style, purge, recurse)
+	}
+
+	statusCode, body, err := c.doRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return
+	}
+
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 403:
+		err = fmt.Errorf("workspace is not empty")
+		return
+	case 404:
+		err = fmt.Errorf("not found")
+		return
+	case 405:
+		err = fmt.Errorf("forbidden")
+		return
+	case 200:
+		return
+	default:
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
+		return
+	}
 }

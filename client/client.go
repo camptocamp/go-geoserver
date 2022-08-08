@@ -56,3 +56,33 @@ func (c *Client) doTypedRequest(method, path string, data io.Reader, contentType
 
 	return
 }
+
+func (c *Client) doFullyTypedRequest(method, path string, data io.Reader, contentType string, acceptType string) (statusCode int, body string, err error) {
+	request, err := http.NewRequest(method, c.URL+path, data)
+	if err != nil {
+		return
+	}
+	if contentType != "" {
+		request.Header.Set("Content-Type", contentType)
+	}
+	if acceptType != "" {
+		request.Header.Set("Accept", acceptType)
+	}
+	if c.Username != "" && c.Password != "" {
+		request.SetBasicAuth(c.Username, c.Password)
+	}
+	response, err := c.HTTPClient.Do(request)
+	if err != nil {
+		return
+	}
+	statusCode = response.StatusCode
+
+	defer response.Body.Close()
+	rawBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return
+	}
+	body = string(rawBody)
+
+	return
+}
