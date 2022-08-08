@@ -421,23 +421,7 @@ func TestCreateStyleNoWorkspaceSuccess(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestUpdateStyleContentNoWorkspace(t *testing.T) {
-	cli := &Client{
-		URL:        "http://localhost:8080/geoserver/rest",
-		Username:   "admin",
-		Password:   "geoserver",
-		HTTPClient: &http.Client{},
-	}
-
-	styleToCreate := &Style{
-		XMLName: xml.Name{
-			Local: "style",
-		},
-		Name:     "test_style",
-		FileName: "test_style.sld",
-		Format:   "sld",
-		Version:  &LanguageVersion{Version: "1.0.0"},
-	}
+func TestUpdateStyleContentSldSuccess(t *testing.T) {
 	const styleDefinition = `
 	<StyledLayerDescriptor version="1.0.0"
 	  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
@@ -470,15 +454,22 @@ func TestUpdateStyleContentNoWorkspace(t *testing.T) {
 	</StyledLayerDescriptor>
 	
 	`
-	errCreating := cli.UpdateStyleContent("", styleToCreate, styleDefinition)
-	assert.Nil(t, errCreating)
-}
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, r.Method, "PUT")
+		assert.Equal(t, r.URL.Path, "/styles/toto")
+		assert.Equal(t, r.Header.Get("Content-Type"), "application/vnd.ogc.sld+xml")
 
-func TestCreateStyleCssNoWorkspace(t *testing.T) {
+		rawBody, err := ioutil.ReadAll(r.Body)
+		assert.Nil(t, err)
+		assert.Equal(t, string(rawBody), styleDefinition)
+
+		w.WriteHeader(200)
+		w.Write([]byte(``))
+	}))
+	defer testServer.Close()
+
 	cli := &Client{
-		URL:        "http://localhost:8080/geoserver/rest",
-		Username:   "admin",
-		Password:   "geoserver",
+		URL:        testServer.URL,
 		HTTPClient: &http.Client{},
 	}
 
@@ -486,38 +477,56 @@ func TestCreateStyleCssNoWorkspace(t *testing.T) {
 		XMLName: xml.Name{
 			Local: "style",
 		},
-		Name:     "test_style_css",
-		FileName: "test_style_css.css",
-	}
-	errCreating := cli.CreateStyle("", styleToCreate)
-	assert.Nil(t, errCreating)
-}
-
-func TestUpdateStyleContentCssNoWorkspace(t *testing.T) {
-	cli := &Client{
-		URL:        "http://localhost:8080/geoserver/rest",
-		Username:   "admin",
-		Password:   "geoserver",
-		HTTPClient: &http.Client{},
-	}
-
-	styleToCreate := &Style{
-		XMLName: xml.Name{
-			Local: "style",
-		},
-		Name:     "test_style_css",
-		FileName: "test_style_css.css",
-		Format:   "css",
+		Name:     "toto",
+		FileName: "test_style.sld",
+		Format:   "sld",
 		Version:  &LanguageVersion{Version: "1.0.0"},
 	}
+
+	err := cli.UpdateStyleContent("", styleToCreate, styleDefinition)
+
+	assert.Nil(t, err)
+}
+
+func TestUpdateStyleContentCssSuccess(t *testing.T) {
 	const styleDefinition = `
 	/* @title cyan line */
 	* {
 		stroke: #0099cc;
 	}		
 	`
-	errCreating := cli.UpdateStyleContent("", styleToCreate, styleDefinition)
-	assert.Nil(t, errCreating)
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, r.Method, "PUT")
+		assert.Equal(t, r.URL.Path, "/styles/toto")
+		assert.Equal(t, r.Header.Get("Content-Type"), "application/vnd.geoserver.geocss+css")
+
+		rawBody, err := ioutil.ReadAll(r.Body)
+		assert.Nil(t, err)
+		assert.Equal(t, string(rawBody), styleDefinition)
+
+		w.WriteHeader(200)
+		w.Write([]byte(``))
+	}))
+	defer testServer.Close()
+
+	cli := &Client{
+		URL:        testServer.URL,
+		HTTPClient: &http.Client{},
+	}
+
+	styleToCreate := &Style{
+		XMLName: xml.Name{
+			Local: "style",
+		},
+		Name:     "toto",
+		FileName: "test_style.css",
+		Format:   "css",
+		Version:  &LanguageVersion{Version: "1.0.0"},
+	}
+
+	err := cli.UpdateStyleContent("", styleToCreate, styleDefinition)
+
+	assert.Nil(t, err)
 }
 
 func TestDeleteStyleNoWorkspace(t *testing.T) {
@@ -529,5 +538,31 @@ func TestDeleteStyleNoWorkspace(t *testing.T) {
 	}
 
 	err := cli.DeleteStyle("", "test_style", true, false)
+	assert.Nil(t, err)
+}
+
+func TestDeleteStyleSuccess(t *testing.T) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, r.Method, "DELETE")
+		assert.Equal(t, r.URL.Path, "/styles/toto")
+		keys, ok := r.URL.Query()["recurse"]
+		assert.True(t, ok)
+		assert.Equal(t, keys[0], "true")
+		keys2, ok2 := r.URL.Query()["purge"]
+		assert.True(t, ok2)
+		assert.Equal(t, keys2[0], "true")
+
+		w.WriteHeader(200)
+		w.Write([]byte(``))
+	}))
+	defer testServer.Close()
+
+	cli := &Client{
+		URL:        testServer.URL,
+		HTTPClient: &http.Client{},
+	}
+
+	err := cli.DeleteStyle("", "toto", true, true)
+
 	assert.Nil(t, err)
 }
