@@ -529,18 +529,6 @@ func TestUpdateStyleContentCssSuccess(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestDeleteStyleNoWorkspace(t *testing.T) {
-	cli := &Client{
-		URL:        "http://localhost:8080/geoserver/rest",
-		Username:   "admin",
-		Password:   "geoserver",
-		HTTPClient: &http.Client{},
-	}
-
-	err := cli.DeleteStyle("", "test_style", true, false)
-	assert.Nil(t, err)
-}
-
 func TestDeleteStyleSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "DELETE")
