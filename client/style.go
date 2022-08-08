@@ -5,7 +5,12 @@ import (
 	"fmt"
 )
 
-// FeatureType is a Geoserver object
+// Style is a Geoserver object
+type Styles struct {
+	XMLName xml.Name `xml:"styles"`
+	List    []*Style `xml:"style"`
+}
+
 type Style struct {
 	XMLName   xml.Name        `xml:"style"`
 	Name      string          `xml:"name"`
@@ -21,6 +26,50 @@ type WorkspaceRef struct {
 
 type LanguageVersion struct {
 	Version string `xml:"version"`
+}
+
+// GetStyles returns all the styles
+func (c *Client) GetStyles(workspace string) (styles []*Style, err error) {
+	var endpoint string
+
+	if workspace == "" {
+		endpoint = fmt.Sprintf("/styles")
+	} else {
+		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
+	}
+
+	statusCode, body, err := c.doRequest("GET", endpoint, nil)
+	if err != nil {
+		return
+	}
+
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 200:
+		break
+	default:
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
+		return
+	}
+
+	var data Styles
+
+	if err := xml.Unmarshal([]byte(body), &data); err != nil {
+		return styles, err
+	}
+
+	for _, styleRef := range data.List {
+		style, err := c.GetStyle(workspace, styleRef.Name)
+		if err != nil {
+			return styles, err
+		}
+
+		styles = append(styles, style)
+	}
+
+	return
 }
 
 // GetStyle return a single style based on its name
