@@ -28,12 +28,16 @@ func NewClient(url, username, password string) (client *Client, err error) {
 }
 
 func (c *Client) doRequest(method, path string, data io.Reader) (statusCode int, body string, err error) {
+	return c.doTypedRequest(method, path, data, "application/xml")
+}
+
+func (c *Client) doTypedRequest(method, path string, data io.Reader, contentType string) (statusCode int, body string, err error) {
 	request, err := http.NewRequest(method, c.URL+path, data)
 	if err != nil {
 		return
 	}
-	request.Header.Set("Content-Type", "application/xml")
-	request.Header.Set("Accept", "application/xml")
+	request.Header.Set("Content-Type", contentType)
+	request.Header.Set("Accept", contentType)
 	if c.Username != "" && c.Password != "" {
 		request.SetBasicAuth(c.Username, c.Password)
 	}
