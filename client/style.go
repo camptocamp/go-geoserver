@@ -7,12 +7,13 @@ import (
 	"strings"
 )
 
-// Style is a Geoserver object
+// Styles is a list of Style
 type Styles struct {
 	XMLName xml.Name `xml:"styles"`
 	List    []*Style `xml:"style"`
 }
 
+// Style is GeoServer Resource
 type Style struct {
 	XMLName   xml.Name         `xml:"style"`
 	Name      string           `xml:"name"`
@@ -22,22 +23,24 @@ type Style struct {
 	FileName  string           `xml:"filename"`
 }
 
+// WorkspaceRef is a reference to a GeoServer workspace
 type WorkspaceRef struct {
 	Name string `xml:"name,omitempty"`
 }
 
+// LanguageVersion is the version of the language used to described the style
 type LanguageVersion struct {
 	Version string `xml:"version,omitempty"`
 }
 
-func (c *Client) GetHttpContentTypeFor(format string, version string) (contentType string) {
+// GetHTTPContentTypeFor computes the content type of a http request for the required format and version
+func (c *Client) GetHTTPContentTypeFor(format string, version string) (contentType string) {
 	switch format {
 	case "sld":
 		if version == "1.0.0" {
 			return "application/vnd.ogc.sld+xml"
-		} else {
-			return "application/vnd.ogc.se+xml "
 		}
+		return "application/vnd.ogc.se+xml "
 	case "css":
 		return "application/vnd.geoserver.geocss+css"
 	case "yaml":
@@ -132,7 +135,7 @@ func (c *Client) GetStyle(workspace, name string) (style *Style, err error) {
 	return
 }
 
-// Get the style definition of a given format
+// GetStyleFile retrieves the style definition of a given format
 func (c *Client) GetStyleFile(workspace, name string, styleFormat string, formatVersion string) (styleFile string, err error) {
 	var endpoint string
 
@@ -143,7 +146,7 @@ func (c *Client) GetStyleFile(workspace, name string, styleFormat string, format
 	}
 
 	// Try to retrieve the style file based on the style format
-	contentType := c.GetHttpContentTypeFor(styleFormat, formatVersion)
+	contentType := c.GetHTTPContentTypeFor(styleFormat, formatVersion)
 
 	statusCode, styleFile, err := c.doTypedRequest("GET", endpoint, nil, contentType)
 	if err != nil {
@@ -212,7 +215,7 @@ func (c *Client) UpdateStyle(workspace string, style *Style, styleDefinition str
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}
 
-	contentType := c.GetHttpContentTypeFor(style.Format, style.Version.Version)
+	contentType := c.GetHTTPContentTypeFor(style.Format, style.Version.Version)
 
 	statusCode, body, err := c.doFullyTypedRequest("POST", endpoint, strings.NewReader(styleDefinition), contentType, "")
 	if err != nil {
@@ -231,7 +234,7 @@ func (c *Client) UpdateStyle(workspace string, style *Style, styleDefinition str
 	}
 }
 
-// UpdateStyle creates a style
+// UpdateStyleContent changes the style definition
 func (c *Client) UpdateStyleContent(workspace string, style *Style, styleDefinition string) (err error) {
 	var endpoint string
 
@@ -241,7 +244,7 @@ func (c *Client) UpdateStyleContent(workspace string, style *Style, styleDefinit
 		endpoint = fmt.Sprintf("/workspaces/%s/styles/%s", workspace, style.Name)
 	}
 
-	contentType := c.GetHttpContentTypeFor(style.Format, style.Version.Version)
+	contentType := c.GetHTTPContentTypeFor(style.Format, style.Version.Version)
 
 	statusCode, body, err := c.doFullyTypedRequest("PUT", endpoint, strings.NewReader(styleDefinition), contentType, "")
 	if err != nil {
@@ -260,7 +263,7 @@ func (c *Client) UpdateStyleContent(workspace string, style *Style, styleDefinit
 	}
 }
 
-// Delete style
+// DeleteStyle deletes style from GeoServer
 func (c *Client) DeleteStyle(workspace string, style string, purge bool, recurse bool) (err error) {
 	var endpoint string
 

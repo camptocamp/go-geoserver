@@ -17,11 +17,13 @@ type FeatureTypeKeywords struct {
 	Keywords []string `xml:"string"`
 }
 
+// FeatureTypeCRS describes CRS information
 type FeatureTypeCRS struct {
 	Class string `xml:"class,attr,omitempty"`
 	Value string `xml:",chardata"`
 }
 
+// FeatureTypes is a list of FeatureType
 type FeatureTypes struct {
 	XMLName xml.Name       `xml:"featureTypes"`
 	List    []*FeatureType `xml:"featureType"`

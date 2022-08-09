@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-// DatastoreRef is a reference to a Datastore
+// DatastoreReference is a reference to a Datastore
 type DatastoreReference struct {
 	Name string `xml:"name"`
 }
