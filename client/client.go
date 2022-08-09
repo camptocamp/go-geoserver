@@ -32,29 +32,7 @@ func (c *Client) doRequest(method, path string, data io.Reader) (statusCode int,
 }
 
 func (c *Client) doTypedRequest(method, path string, data io.Reader, contentType string) (statusCode int, body string, err error) {
-	request, err := http.NewRequest(method, c.URL+path, data)
-	if err != nil {
-		return
-	}
-	request.Header.Set("Content-Type", contentType)
-	request.Header.Set("Accept", contentType)
-	if c.Username != "" && c.Password != "" {
-		request.SetBasicAuth(c.Username, c.Password)
-	}
-	response, err := c.HTTPClient.Do(request)
-	if err != nil {
-		return
-	}
-	statusCode = response.StatusCode
-
-	defer response.Body.Close()
-	rawBody, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return
-	}
-	body = string(rawBody)
-
-	return
+	return c.doFullyTypedRequest(method, path, data, contentType, contentType)
 }
 
 func (c *Client) doFullyTypedRequest(method, path string, data io.Reader, contentType string, acceptType string) (statusCode int, body string, err error) {
