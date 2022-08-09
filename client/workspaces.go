@@ -24,6 +24,11 @@ type Workspace struct {
 	Isolated bool     `xml:"isolated"`
 }
 
+// WorkspaceRef is a reference to a GeoServer workspace
+type WorkspaceRef struct {
+	Name string `xml:"name,omitempty"`
+}
+
 // GetWorkspaces returns the list of the workspaces
 func (c *Client) GetWorkspaces() (workspaces []*Workspace, err error) {
 	statusCode, body, err := c.doRequest("GET", "/workspaces", nil)
