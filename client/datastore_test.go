@@ -53,18 +53,18 @@ func TestGetDatastoresSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*Datastore{
-		&Datastore{
+		{
 			XMLName: xml.Name{
 				Local: "dataStore",
 			},
 			Name:    "sf",
 			Enabled: true,
 			ConnectionParameters: []*DatastoreConnectionParameter{
-				&DatastoreConnectionParameter{
+				{
 					Key:   "url",
 					Value: "file:data/sf",
 				},
-				&DatastoreConnectionParameter{
+				{
 					Key:   "namespace",
 					Value: "http://www.openplans.org/spearfish",
 				},
@@ -123,11 +123,11 @@ func TestGetDatastoreSuccess(t *testing.T) {
 		Name:    "sf",
 		Enabled: true,
 		ConnectionParameters: []*DatastoreConnectionParameter{
-			&DatastoreConnectionParameter{
+			{
 				Key:   "url",
 				Value: "file:data/sf",
 			},
-			&DatastoreConnectionParameter{
+			{
 				Key:   "namespace",
 				Value: "http://www.openplans.org/spearfish",
 			},
@@ -229,11 +229,11 @@ func TestCreateDatastoreSuccess(t *testing.T) {
 			Name:    "sf",
 			Enabled: true,
 			ConnectionParameters: []*DatastoreConnectionParameter{
-				&DatastoreConnectionParameter{
+				{
 					Key:   "url",
 					Value: "file:data/sf",
 				},
-				&DatastoreConnectionParameter{
+				{
 					Key:   "namespace",
 					Value: "http://www.openplans.org/spearfish",
 				},
@@ -254,11 +254,11 @@ func TestCreateDatastoreSuccess(t *testing.T) {
 		Name:    "sf",
 		Enabled: true,
 		ConnectionParameters: []*DatastoreConnectionParameter{
-			&DatastoreConnectionParameter{
+			{
 				Key:   "url",
 				Value: "file:data/sf",
 			},
-			&DatastoreConnectionParameter{
+			{
 				Key:   "namespace",
 				Value: "http://www.openplans.org/spearfish",
 			},
@@ -285,11 +285,11 @@ func TestUpdateDatastoreSuccess(t *testing.T) {
 			Name:    "sf",
 			Enabled: true,
 			ConnectionParameters: []*DatastoreConnectionParameter{
-				&DatastoreConnectionParameter{
+				{
 					Key:   "url",
 					Value: "file:data/sf",
 				},
-				&DatastoreConnectionParameter{
+				{
 					Key:   "namespace",
 					Value: "http://www.openplans.org/spearfish",
 				},
@@ -310,11 +310,11 @@ func TestUpdateDatastoreSuccess(t *testing.T) {
 		Name:    "sf",
 		Enabled: true,
 		ConnectionParameters: []*DatastoreConnectionParameter{
-			&DatastoreConnectionParameter{
+			{
 				Key:   "url",
 				Value: "file:data/sf",
 			},
-			&DatastoreConnectionParameter{
+			{
 				Key:   "namespace",
 				Value: "http://www.openplans.org/spearfish",
 			},

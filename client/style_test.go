@@ -44,15 +44,13 @@ func TestGetStylesNoWorkspaceSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*Style{
-		&Style{
-			XMLName: xml.Name{
-				Space: "",
-				Local: "style",
-			},
-			Name:     "line",
-			Format:   "sld",
-			Version:  &LanguageVersion{Version: "1.0.0"},
-			FileName: "default_line.sld",
+		{
+			XMLName:   xml.Name{Space: "", Local: "style"},
+			Name:      "line",
+			Workspace: &WorkspaceRef{},
+			Format:    "sld",
+			Version:   &LanguageVersion{Version: "1.0.0"},
+			FileName:  "default_line.sld",
 		},
 	}
 
@@ -104,7 +102,7 @@ func TestGetStylesWorkspaceSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*Style{
-		&Style{
+		{
 			XMLName: xml.Name{
 				Space: "",
 				Local: "style",

@@ -30,10 +30,10 @@ func TestGetWorkspacesSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*Workspace{
-		&Workspace{
+		{
 			Name: "topp",
 		},
-		&Workspace{
+		{
 			Name: "it.geosolutions",
 		},
 	}
