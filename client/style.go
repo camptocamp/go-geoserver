@@ -23,11 +23,6 @@ type Style struct {
 	FileName  string           `xml:"filename"`
 }
 
-// WorkspaceRef is a reference to a GeoServer workspace
-type WorkspaceRef struct {
-	Name string `xml:"name,omitempty"`
-}
-
 // LanguageVersion is the version of the language used to described the style
 type LanguageVersion struct {
 	Version string `xml:"version,omitempty"`
