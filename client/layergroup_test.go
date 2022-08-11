@@ -10,32 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOnLocalHost(t *testing.T) {
-	cli := &Client{
-		URL:        "http://localhost:8080/geoserver/rest",
-		HTTPClient: &http.Client{},
-		Username:   "admin",
-		Password:   "geoserver",
-	}
-
-	/* 	layerGroup := &LayerGroup{
-	   		Name: "test2",
-	   		Publishables: []*LayerRef{{
-	   			Type: "layer",
-	   			Name: "osm:osm_buildings",
-	   		}},
-	   		Styles: []*StyleRef{{
-	   			Name: "osm:buildings",
-	   		}},
-	   	}
-
-	*/
-	layerGroup, err := cli.GetGroup("osm", "nyc")
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(layerGroup.Keywords.Keywords), 4)
-}
-
 func TestGetGroupsNoWorkspaceSuccess(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/layergroups", func(w http.ResponseWriter, r *http.Request) {
