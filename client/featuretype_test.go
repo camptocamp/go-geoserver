@@ -39,7 +39,7 @@ func TestGetFeatureTypesNoDatastoreSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*FeatureType{
-		&FeatureType{
+		{
 			XMLName: xml.Name{
 				Space: "",
 				Local: "featureType",
@@ -88,7 +88,7 @@ func TestGetFeatureTypesInDatastoreSuccess(t *testing.T) {
 	defer testServer.Close()
 
 	expectedResult := []*FeatureType{
-		&FeatureType{
+		{
 			XMLName: xml.Name{
 				Local: "featureType",
 			},
@@ -241,17 +241,17 @@ func TestGetFeatureTypeNoDatastoreSuccess(t *testing.T) {
 		ProjectionPolicy: "NONE",
 		Enabled:          true,
 		Metadata: []*FeatureTypeMetadata{
-			&FeatureTypeMetadata{
+			{
 				Key:   "time",
 				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 			},
-			&FeatureTypeMetadata{
+			{
 				Key:   "cachingEnabled",
 				Value: "true",
 			},
 		},
 		Attributes: []*FeatureTypeAttribute{
-			&FeatureTypeAttribute{
+			{
 				Name:      "the_geom",
 				MinOccurs: 0,
 				MaxOccurs: 1,
@@ -406,17 +406,17 @@ func TestGetFeatureTypeInDatastoreSuccess(t *testing.T) {
 		ProjectionPolicy: "NONE",
 		Enabled:          true,
 		Metadata: []*FeatureTypeMetadata{
-			&FeatureTypeMetadata{
+			{
 				Key:   "time",
 				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 			},
-			&FeatureTypeMetadata{
+			{
 				Key:   "cachingEnabled",
 				Value: "true",
 			},
 		},
 		Attributes: []*FeatureTypeAttribute{
-			&FeatureTypeAttribute{
+			{
 				Name:      "the_geom",
 				MinOccurs: 0,
 				MaxOccurs: 1,
@@ -554,17 +554,17 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			ProjectionPolicy: "NONE",
 			Enabled:          true,
 			Metadata: []*FeatureTypeMetadata{
-				&FeatureTypeMetadata{
+				{
 					Key:   "time",
 					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				&FeatureTypeMetadata{
+				{
 					Key:   "cachingEnabled",
 					Value: "true",
 				},
 			},
 			Attributes: []*FeatureTypeAttribute{
-				&FeatureTypeAttribute{
+				{
 					Name:      "the_geom",
 					MinOccurs: 0,
 					MaxOccurs: 1,
@@ -628,17 +628,17 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 		ProjectionPolicy: "NONE",
 		Enabled:          true,
 		Metadata: []*FeatureTypeMetadata{
-			&FeatureTypeMetadata{
+			{
 				Key:   "time",
 				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 			},
-			&FeatureTypeMetadata{
+			{
 				Key:   "cachingEnabled",
 				Value: "true",
 			},
 		},
 		Attributes: []*FeatureTypeAttribute{
-			&FeatureTypeAttribute{
+			{
 				Name:      "the_geom",
 				MinOccurs: 0,
 				MaxOccurs: 1,
@@ -705,17 +705,17 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 			ProjectionPolicy: "NONE",
 			Enabled:          true,
 			Metadata: []*FeatureTypeMetadata{
-				&FeatureTypeMetadata{
+				{
 					Key:   "time",
 					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				&FeatureTypeMetadata{
+				{
 					Key:   "cachingEnabled",
 					Value: "true",
 				},
 			},
 			Attributes: []*FeatureTypeAttribute{
-				&FeatureTypeAttribute{
+				{
 					Name:      "the_geom",
 					MinOccurs: 0,
 					MaxOccurs: 1,
@@ -779,17 +779,17 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 		ProjectionPolicy: "NONE",
 		Enabled:          true,
 		Metadata: []*FeatureTypeMetadata{
-			&FeatureTypeMetadata{
+			{
 				Key:   "time",
 				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 			},
-			&FeatureTypeMetadata{
+			{
 				Key:   "cachingEnabled",
 				Value: "true",
 			},
 		},
 		Attributes: []*FeatureTypeAttribute{
-			&FeatureTypeAttribute{
+			{
 				Name:      "the_geom",
 				MinOccurs: 0,
 				MaxOccurs: 1,
@@ -856,17 +856,17 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 			ProjectionPolicy: "NONE",
 			Enabled:          true,
 			Metadata: []*FeatureTypeMetadata{
-				&FeatureTypeMetadata{
+				{
 					Key:   "time",
 					Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 				},
-				&FeatureTypeMetadata{
+				{
 					Key:   "cachingEnabled",
 					Value: "true",
 				},
 			},
 			Attributes: []*FeatureTypeAttribute{
-				&FeatureTypeAttribute{
+				{
 					Name:      "the_geom",
 					MinOccurs: 0,
 					MaxOccurs: 1,
@@ -930,17 +930,17 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 		ProjectionPolicy: "NONE",
 		Enabled:          true,
 		Metadata: []*FeatureTypeMetadata{
-			&FeatureTypeMetadata{
+			{
 				Key:   "time",
 				Value: "<dimensionInfo><enabled>false</enabled><defaultValue/></dimensionInfo>",
 			},
-			&FeatureTypeMetadata{
+			{
 				Key:   "cachingEnabled",
 				Value: "true",
 			},
 		},
 		Attributes: []*FeatureTypeAttribute{
-			&FeatureTypeAttribute{
+			{
 				Name:      "the_geom",
 				MinOccurs: 0,
 				MaxOccurs: 1,
