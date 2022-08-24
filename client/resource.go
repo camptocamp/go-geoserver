@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// GetGroup return a single group based on its name
+// GetResource returns a file stored in the resource store
 func (c *Client) GetResource(pathToResource string, resourceExtension string) (resourceContent string, err error) {
 	if resourceExtension == "" {
 		err = fmt.Errorf("Retrieving content of resource is only possible for files")
