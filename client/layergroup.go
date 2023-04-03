@@ -55,7 +55,7 @@ func (c *Client) GetGroups(workspace string) (layerGroups []*LayerGroup, err err
 	var endpoint string
 
 	if workspace == "" {
-		endpoint = fmt.Sprintf("/layergroups")
+		endpoint = "/layergroups"
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/layergroups", workspace)
 	}
@@ -138,7 +138,7 @@ func (c *Client) CreateGroup(workspace string, layerGroup *LayerGroup) (err erro
 	var endpoint string
 
 	if workspace == "" {
-		endpoint = fmt.Sprintf("/layergroups")
+		endpoint = "/layergroups"
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/layergroups", workspace)
 	}
