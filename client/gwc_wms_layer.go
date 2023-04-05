@@ -26,7 +26,7 @@ type GwcWmsLayer struct {
 	BlobStoreId          string        `xml:"blobStoreId"`
 	MimeFormats          MimeFormats   `xml:"mimeFormats"`
 	GridSubsets          []*GridSubset `xml:"gridSubsets>gridSubset"`
-	MetaWidthHeight      MetaTileDim   `xml:"metaWidthHeight"`
+	MetaTileDimensions   []int         `xml:"metaWidthHeight>int"`
 	ExpireCacheDuration  int           `xml:"expireCache"`
 	ExpireClientDuration int           `xml:"expireClients"`
 	GutterSize           int           `xml:"gutter"`
@@ -38,11 +38,6 @@ type GwcWmsLayer struct {
 
 type GridSubset struct {
 	Name string `xml:"gridSetName"`
-}
-
-type MetaTileDim struct {
-	Width  int `xml:"int"`
-	Height int `xml:"int"`
 }
 
 // ScaleNames is a XML object for scale names
