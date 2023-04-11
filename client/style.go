@@ -52,7 +52,7 @@ func (c *Client) GetStyles(workspace string) (styles []*Style, err error) {
 	var endpoint string
 
 	if workspace == "" {
-		endpoint = fmt.Sprintf("/styles")
+		endpoint = "/styles"
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}
@@ -170,7 +170,7 @@ func (c *Client) CreateStyle(workspace string, style *Style) (err error) {
 	var endpoint string
 
 	if workspace == "" {
-		endpoint = fmt.Sprintf("/styles")
+		endpoint = "/styles"
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}
@@ -205,7 +205,7 @@ func (c *Client) UpdateStyle(workspace string, style *Style, styleDefinition str
 	var endpoint string
 
 	if workspace == "" {
-		endpoint = fmt.Sprintf("/styles")
+		endpoint = "/styles"
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}

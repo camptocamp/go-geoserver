@@ -8,7 +8,7 @@ import (
 // GetResource returns a file stored in the resource store
 func (c *Client) GetResource(pathToResource string, resourceExtension string) (resourceContent string, err error) {
 	if resourceExtension == "" {
-		err = fmt.Errorf("Retrieving content of resource is only possible for files")
+		err = fmt.Errorf("retrieving content of resource is only possible for files")
 		return
 	}
 
@@ -21,7 +21,7 @@ func (c *Client) GetResource(pathToResource string, resourceExtension string) (r
 
 	switch statusCode {
 	case 404:
-		err = fmt.Errorf("Resource not found")
+		err = fmt.Errorf("resource not found")
 		return
 	case 200:
 		break
@@ -36,12 +36,12 @@ func (c *Client) GetResource(pathToResource string, resourceExtension string) (r
 // CreateResource creates a resource on GeoServer
 func (c *Client) CreateResource(pathToResource string, resourceExtension string, resourceContent string) (err error) {
 	if resourceExtension == "" {
-		err = fmt.Errorf("Creation of resource is only possible for files")
+		err = fmt.Errorf("creation of resource is only possible for files")
 		return
 	}
 
 	if resourceContent == "" {
-		err = fmt.Errorf("Resource content must be defined")
+		err = fmt.Errorf("resource content must be defined")
 		return
 	}
 
@@ -54,7 +54,7 @@ func (c *Client) CreateResource(pathToResource string, resourceExtension string,
 
 	switch statusCode {
 	case 404:
-		err = fmt.Errorf("Source path that doesn’t exist")
+		err = fmt.Errorf("source path that doesn’t exist")
 		return
 	case 405:
 		err = fmt.Errorf("PUT to directory or copy where source path is directory")
@@ -72,12 +72,12 @@ func (c *Client) CreateResource(pathToResource string, resourceExtension string,
 // UpdateResource updates an existing resource
 func (c *Client) UpdateResource(pathToResource string, resourceExtension string, resourceContent string) (err error) {
 	if resourceExtension == "" {
-		err = fmt.Errorf("Creation of resource is only possible for files")
+		err = fmt.Errorf("creation of resource is only possible for files")
 		return
 	}
 
 	if resourceContent == "" {
-		err = fmt.Errorf("Resource content must be defined")
+		err = fmt.Errorf("resource content must be defined")
 		return
 	}
 
@@ -90,7 +90,7 @@ func (c *Client) UpdateResource(pathToResource string, resourceExtension string,
 
 	switch statusCode {
 	case 404:
-		err = fmt.Errorf("Source path that doesn’t exist")
+		err = fmt.Errorf("source path that doesn’t exist")
 		return
 	case 405:
 		err = fmt.Errorf("PUT to directory or copy where source path is directory")
