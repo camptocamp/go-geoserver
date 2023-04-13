@@ -22,7 +22,6 @@ type GwcWmsLayer struct {
 	XMLName              xml.Name      `xml:"wmsLayer"`
 	Name                 string        `xml:"name"`
 	Enabled              bool          `xml:"enabled"`
-	InMemoryCached       bool          `xml:"inMemoryCached"`
 	BlobStoreId          string        `xml:"blobStoreId"`
 	MimeFormats          MimeFormats   `xml:"mimeFormats"`
 	GridSubsets          []*GridSubset `xml:"gridSubsets>gridSubset"`
