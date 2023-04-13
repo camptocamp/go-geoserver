@@ -130,7 +130,7 @@ func (c *Client) CreateGridset(gridsetName string, gridset *Gridset) (err error)
 	case 401:
 		err = fmt.Errorf("unauthorized")
 		return
-	case 201:
+	case 200:
 		return
 	default:
 		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)

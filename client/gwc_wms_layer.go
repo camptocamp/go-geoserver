@@ -88,7 +88,7 @@ func (c *Client) CreateGwcWmsLayer(layerName string, layer *GwcWmsLayer) (err er
 	case 401:
 		err = fmt.Errorf("unauthorized")
 		return
-	case 201:
+	case 200:
 		return
 	default:
 		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
