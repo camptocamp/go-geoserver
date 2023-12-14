@@ -6,25 +6,17 @@ import (
 	"fmt"
 )
 
-// BlobstoreS3 is a Geoserver object
-type BlobstoreS3 struct {
-	XMLName        xml.Name `xml:"S3BlobStore"`
-	Id             string   `xml:"id"`
-	Bucket         string   `xml:"bucket"`
-	Prefix         string   `xml:"prefix"`
-	AwsAccessKey   string   `xml:"awsAccessKey"`
-	AwsSecretKey   string   `xml:"awsSecretKey"`
-	Access         string   `xml:"access"`
-	Endpoint       string   `xml:"endpoint"`
-	MaxConnections int      `xml:"maxConnections"`
-	UseHTTPS       bool     `xml:"useHTTPS"`
-	UseGzip        bool     `xml:"useGzip"`
-	Enabled        bool     `xml:"enabled"`
-	Default        bool     `xml:"__default"`
+// BlobstoreFile is a Geoserver object
+type BlobstoreFile struct {
+	XMLName             xml.Name `xml:"FileBlobStore"`
+	Id                  string   `xml:"id"`
+	Enabled             bool     `xml:"enabled"`
+	BaseDirectory       string   `xml:"baseDirectory"`
+	FileSystemBlockSize int      `xml:"fileSystemBlockSize"`
 }
 
-// GetBlobstoreS3 return a single S3 datastore based on its name
-func (c *Client) GetBlobstoreS3(name string) (blobstore *BlobstoreS3, err error) {
+// GetBlobstoreFile return a single File datastore based on its name
+func (c *Client) GetBlobstoreFile(name string) (blobstore *BlobstoreFile, err error) {
 	statusCode, body, err := c.doRequest("GET", fmt.Sprintf("/blobstores/%s", name), nil)
 	if err != nil {
 		return
@@ -44,7 +36,7 @@ func (c *Client) GetBlobstoreS3(name string) (blobstore *BlobstoreS3, err error)
 		return
 	}
 
-	var data BlobstoreS3
+	var data BlobstoreFile
 	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return blobstore, err
 	}
@@ -54,8 +46,8 @@ func (c *Client) GetBlobstoreS3(name string) (blobstore *BlobstoreS3, err error)
 	return
 }
 
-// CreateBlobstoreS3 creates a blobstore on S3
-func (c *Client) CreateBlobstoreS3(blobstoreName string, blobstore *BlobstoreS3) (err error) {
+// CreateBlobstoreFile creates a blobstore on disk
+func (c *Client) CreateBlobstoreFile(blobstoreName string, blobstore *BlobstoreFile) (err error) {
 	payload, _ := xml.Marshal(&blobstore)
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/blobstores/%s", blobstoreName), bytes.NewBuffer(payload))
 	if err != nil {
@@ -74,8 +66,8 @@ func (c *Client) CreateBlobstoreS3(blobstoreName string, blobstore *BlobstoreS3)
 	}
 }
 
-// UpdateBlobstoreS3 updates a blobstore
-func (c *Client) UpdateBlobstoreS3(blobstoreName string, blobstore *BlobstoreS3) (err error) {
+// UpdateBlobstoreFile updates a blobstore
+func (c *Client) UpdateBlobstoreFile(blobstoreName string, blobstore *BlobstoreFile) (err error) {
 	payload, _ := xml.Marshal(&blobstore)
 
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/blobstores/%s", blobstoreName), bytes.NewBuffer(payload))
@@ -102,7 +94,7 @@ func (c *Client) UpdateBlobstoreS3(blobstoreName string, blobstore *BlobstoreS3)
 }
 
 // DeleteDatastore deletes a datastore
-func (c *Client) DeleteBlobstoreS3(blobstoreName string) (err error) {
+func (c *Client) DeleteBlobstoreFile(blobstoreName string) (err error) {
 	statusCode, body, err := c.doRequest("DELETE", fmt.Sprintf("/blobstores/%s", blobstoreName), nil)
 	if err != nil {
 		return
