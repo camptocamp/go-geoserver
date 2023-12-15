@@ -33,16 +33,16 @@ type GwcWmsLayer struct {
 	CacheBypassAllowed   bool          `xml:"cacheBypassAllowed"`
 	WmsUrl               string        `xml:"wmsUrl>string"`
 	WmsLayer             string        `xml:"wmsLayers"`
-	WmsVersion           string        `xml:"wmsVersion"`
-	VendorParameters     string        `xml:"vendorParameters"`
-	Transparent          bool          `xml:"transparent"`
-	BgColor              string        `xml:"bgColor"`
+	WmsVersion           string        `xml:"wmsVersion,omitempty"`
+	VendorParameters     string        `xml:"vendorParameters,omitempty"`
+	Transparent          bool          `xml:"transparent,omitempty"`
+	BgColor              string        `xml:"bgColor,omitempty"`
 }
 
 type GridSubset struct {
 	Name          string `xml:"gridSetName"`
-	MinCacheLevel int    `xml:"minCachedLevel"`
-	MaxCacheLevel int    `xml:"maxCachedLevel"`
+	MinCacheLevel int    `xml:"minCachedLevel,omitempty"`
+	MaxCacheLevel int    `xml:"maxCachedLevel,omitempty"`
 }
 
 // ScaleNames is a XML object for scale names
