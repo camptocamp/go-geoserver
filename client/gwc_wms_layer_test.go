@@ -28,6 +28,7 @@ func TestGetGwcWmsLayerSuccess(t *testing.T) {
   <gridSubsets>
     <gridSubset>
       <gridSetName>EPSG:3857</gridSetName>
+	  <maxCachedLevel>15</maxCachedLevel>
     </gridSubset>
     <gridSubset>
       <gridSetName>EPSG:4326</gridSetName>
@@ -57,6 +58,10 @@ func TestGetGwcWmsLayerSuccess(t *testing.T) {
   <wmsLayers>osm:fdp_normal</wmsLayers>
   <gutter>0</gutter>
   <concurrency>32</concurrency>
+  <wmsVersion>1.3.0</wmsVersion>
+  <vendorParameters>CRS=EPSG:3857</vendorParameters>
+  <transparent>false</transparent>
+  <bgColor>0xAAD5E9</bgColor>
 </wmsLayer>
 		`))
 	})
@@ -74,7 +79,8 @@ func TestGetGwcWmsLayerSuccess(t *testing.T) {
 		MimeFormats: MimeFormats{Formats: []string{"image/png", "image/jpeg"}},
 		GridSubsets: []*GridSubset{
 			{
-				Name: "EPSG:3857",
+				Name:          "EPSG:3857",
+				MaxCacheLevel: 15,
 			},
 			{
 				Name: "EPSG:4326",
@@ -91,6 +97,10 @@ func TestGetGwcWmsLayerSuccess(t *testing.T) {
 		CacheBypassAllowed:   false,
 		WmsUrl:               "https://master.dev.scw.ansc.fr/geoserver/ows?service=WMS",
 		WmsLayer:             "osm:fdp_normal",
+		WmsVersion:           "1.3.0",
+		Transparent:          false,
+		BgColor:              "0xAAD5E9",
+		VendorParameters:     "CRS=EPSG:3857",
 	}
 
 	cli := &Client{
