@@ -35,7 +35,7 @@ type GwcWmsLayer struct {
 	WmsLayer             string        `xml:"wmsLayers"`
 	WmsVersion           string        `xml:"wmsVersion,omitempty"`
 	VendorParameters     string        `xml:"vendorParameters,omitempty"`
-	Transparent          bool          `xml:"transparent,omitempty"`
+	Transparent          bool          `xml:"transparent"`
 	BgColor              string        `xml:"bgColor,omitempty"`
 }
 
