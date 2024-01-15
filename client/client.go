@@ -57,7 +57,7 @@ func (c *Client) doFullyTypedRequest(method, path string, data io.Reader, conten
 	statusCode = response.StatusCode
 
 	defer response.Body.Close()
-	rawBody, err := ioutil.ReadAll(response.Body)
+	rawBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return
 	}
