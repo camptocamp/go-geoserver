@@ -40,6 +40,7 @@ func (c *Client) doFullyTypedRequest(method, path string, data io.Reader, conten
 	if err != nil {
 		return
 	}
+	request.Header.Set("Accept-Encoding", "identity")
 	if contentType != "" {
 		request.Header.Set("Content-Type", contentType)
 	}
