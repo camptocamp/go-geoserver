@@ -195,7 +195,7 @@ func (c *Client) CreateFeatureType(workspace string, datastore string, featureTy
 }
 
 // UpdateFeatureType updates a featuretype
-func (c *Client) UpdateFeatureType(workspace, datastore, featureTypeName string, featureType *FeatureType) (err error) {
+func (c *Client) UpdateFeatureType(workspace, datastore, featureTypeName string, featureType *FeatureType, recalculateAttributes bool) (err error) {
 	var endpoint string
 	if workspace == "" {
 		err = fmt.Errorf("workspace cannot be null")
@@ -206,6 +206,10 @@ func (c *Client) UpdateFeatureType(workspace, datastore, featureTypeName string,
 		endpoint = fmt.Sprintf("/workspaces/%s/featuretypes/%s", workspace, featureTypeName)
 	} else {
 		endpoint = fmt.Sprintf("/workspaces/%s/datastores/%s/featuretypes/%s", workspace, datastore, featureTypeName)
+	}
+
+	if recalculateAttributes {
+		endpoint = endpoint + "?recalculate=attributes"
 	}
 
 	featureType.XMLName = xml.Name{

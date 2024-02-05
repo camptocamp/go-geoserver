@@ -948,7 +948,7 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 				Binding:   "org.locationtech.jts.geom.Point",
 			},
 		},
-	})
+	}, false)
 
 	assert.Nil(t, err)
 }
