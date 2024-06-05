@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -23,6 +24,20 @@ func NewClient(url, username, password string) (client *Client, err error) {
 
 		HTTPClient: &http.Client{},
 	}
+
+	// Check if the URL is valid
+	statusCode, body, err := client.doRequest("GET", "", nil)
+	switch statusCode {
+	case 401:
+		err = fmt.Errorf("unauthorized")
+		return
+	case 200:
+		break
+	default:
+		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
+		return
+	}
+
 	return
 }
 
