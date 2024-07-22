@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -195,7 +195,7 @@ func TestCreateWorkspaceSuccess(t *testing.T) {
 		assert.True(t, ok)
 		assert.Equal(t, keys[0], "true")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Workspace
 		err = xml.Unmarshal(rawBody, &payload)
@@ -274,7 +274,7 @@ func TestUpdateWorkspaceSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Workspace
 		err = xml.Unmarshal(rawBody, &payload)

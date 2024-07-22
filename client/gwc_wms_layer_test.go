@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -182,7 +182,7 @@ func TestCreateGwcWmsLayerSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/layers/osm:fdp_normal")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *GwcWmsLayer
 		err = xml.Unmarshal(rawBody, &payload)
@@ -263,7 +263,7 @@ func TestUpdateGwcWmsLayerSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/layers/osm:fdp_normal")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *GwcWmsLayer
 		err = xml.Unmarshal(rawBody, &payload)

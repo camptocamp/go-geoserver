@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -384,7 +384,7 @@ func TestCreateStyleNoWorkspaceSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/styles")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Style
 		err = xml.Unmarshal(rawBody, &payload)
@@ -456,7 +456,7 @@ func TestUpdateStyleContentSldSuccess(t *testing.T) {
 		assert.Equal(t, r.URL.Path, "/styles/toto")
 		assert.Equal(t, r.Header.Get("Content-Type"), "application/vnd.ogc.sld+xml")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		assert.Equal(t, string(rawBody), styleDefinition)
 
@@ -497,7 +497,7 @@ func TestUpdateStyleContentCssSuccess(t *testing.T) {
 		assert.Equal(t, r.URL.Path, "/styles/toto")
 		assert.Equal(t, r.Header.Get("Content-Type"), "application/vnd.geoserver.geocss+css")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		assert.Equal(t, string(rawBody), styleDefinition)
 

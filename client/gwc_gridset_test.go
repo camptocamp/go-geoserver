@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -163,7 +163,7 @@ func TestCreateGridsetSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/gridsets/EPSG:3857")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Gridset
 		err = xml.Unmarshal(rawBody, &payload)
@@ -224,7 +224,7 @@ func TestUpdateGridsetSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/gridsets/EPSG:3857")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Gridset
 		err = xml.Unmarshal(rawBody, &payload)
