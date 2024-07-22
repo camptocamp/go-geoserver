@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -217,7 +217,7 @@ func TestCreateDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/datastores")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Datastore
 		err = xml.Unmarshal(rawBody, &payload)
@@ -273,7 +273,7 @@ func TestUpdateDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/datastores/sf")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *Datastore
 		err = xml.Unmarshal(rawBody, &payload)

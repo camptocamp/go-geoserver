@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -217,7 +217,7 @@ func TestCreateWmsStoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmsstores")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *WmsStore
 		err = xml.Unmarshal(rawBody, &payload)
@@ -276,7 +276,7 @@ func TestUpdateWmsStoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmsstores/sf")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *WmsStore
 		err = xml.Unmarshal(rawBody, &payload)

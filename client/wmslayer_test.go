@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -379,7 +379,7 @@ func TestCreateWmsLayerNoDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmslayers")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *WmsLayer
 		err = xml.Unmarshal(rawBody, &payload)
@@ -490,7 +490,7 @@ func TestCreateWmsLayerInDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmsstores/bar/wmslayers")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *WmsLayer
 		err = xml.Unmarshal(rawBody, &payload)
@@ -601,7 +601,7 @@ func TestUpdateWmsLayerNoDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmslayers/toto")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *WmsLayer
 		err = xml.Unmarshal(rawBody, &payload)

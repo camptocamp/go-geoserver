@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -505,7 +505,7 @@ func TestCreateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/featuretypes")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *FeatureType
 		err = xml.Unmarshal(rawBody, &payload)
@@ -656,7 +656,7 @@ func TestCreateFeatureTypeInDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/datastores/bar/featuretypes")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *FeatureType
 		err = xml.Unmarshal(rawBody, &payload)
@@ -807,7 +807,7 @@ func TestUpdateFeatureTypeNoDatastoreSuccess(t *testing.T) {
 		assert.Equal(t, r.Method, "PUT")
 		assert.Equal(t, r.URL.Path, "/workspaces/foo/featuretypes/toto")
 
-		rawBody, err := ioutil.ReadAll(r.Body)
+		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
 		var payload *FeatureType
 		err = xml.Unmarshal(rawBody, &payload)
