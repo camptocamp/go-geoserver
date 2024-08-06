@@ -146,7 +146,7 @@ func TestCreateS3BlobstoreSuccess(t *testing.T) {
 			Id:      "sf",
 		})
 
-		w.WriteHeader(200)
+		w.WriteHeader(201)
 		w.Write([]byte(``))
 	}))
 	defer testServer.Close()

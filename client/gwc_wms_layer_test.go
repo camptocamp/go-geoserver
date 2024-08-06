@@ -216,7 +216,7 @@ func TestCreateGwcWmsLayerSuccess(t *testing.T) {
 			WmsLayer:             "osm:fdp_normal",
 		})
 
-		w.WriteHeader(200)
+		w.WriteHeader(201)
 		w.Write([]byte(``))
 	}))
 	defer testServer.Close()

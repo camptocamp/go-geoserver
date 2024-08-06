@@ -187,7 +187,7 @@ func TestCreateGridsetSuccess(t *testing.T) {
 			YCoordinateFirst:  false,
 		})
 
-		w.WriteHeader(200)
+		w.WriteHeader(201)
 		w.Write([]byte(``))
 	}))
 	defer testServer.Close()
