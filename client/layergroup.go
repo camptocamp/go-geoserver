@@ -40,7 +40,7 @@ type LayerRef struct {
 
 // StyleRef is a reference to an existing style in GeoServer
 type StyleRef struct {
-	Name string `xml:"name,omitempty"`
+	Name string `xml:"name"`
 }
 
 // MetadataLink gives informations on external metadata

@@ -393,7 +393,7 @@ func TestCreateLayerGroupNoWorkspaceSuccess(t *testing.T) {
 					Name: "style1",
 				},
 				{
-					Name: "",
+					Name: "style2",
 				},
 			},
 		})
@@ -426,7 +426,7 @@ func TestCreateLayerGroupNoWorkspaceSuccess(t *testing.T) {
 				Name: "style1",
 			},
 			{
-				Name: "",
+				Name: "style2",
 			},
 		},
 	})
