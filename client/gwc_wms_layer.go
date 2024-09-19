@@ -66,6 +66,8 @@ func (c *Client) GetGwcWMSLayer(name string) (layer *GwcWmsLayer, err error) {
 		return
 	case 200:
 		break
+	case 201:
+		break
 	default:
 		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
 		return
