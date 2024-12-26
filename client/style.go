@@ -40,7 +40,7 @@ func (c *Client) GetHTTPContentTypeFor(format string, version string) (contentTy
 		return "application/vnd.geoserver.geocss+css"
 	case "yaml":
 		return "application/vnd.geoserver.ysld+yaml"
-	case "json":
+	case "mbstyle":
 		return "application/vnd.geoserver.mbstyle+json"
 	default:
 		return "application/vnd.ogc.sld+xml"
@@ -175,9 +175,7 @@ func (c *Client) CreateStyle(workspace string, style *Style) (err error) {
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}
 
-	if style.Format != "json" {
-		endpoint = endpoint + "?raw=true"
-	}
+	endpoint = endpoint + "?raw=true"
 
 	style.XMLName = xml.Name{
 		Local: "style",
@@ -214,9 +212,7 @@ func (c *Client) UpdateStyle(workspace string, style *Style, styleDefinition str
 		endpoint = fmt.Sprintf("/workspaces/%s/styles", workspace)
 	}
 
-	if style.Format != "json" {
-		endpoint = endpoint + "?raw=true"
-	}
+	endpoint = endpoint + "?raw=true"
 
 	contentType := c.GetHTTPContentTypeFor(style.Format, style.Version.Version)
 
@@ -247,9 +243,7 @@ func (c *Client) UpdateStyleContent(workspace string, style *Style, styleDefinit
 		endpoint = fmt.Sprintf("/workspaces/%s/styles/%s", workspace, style.Name)
 	}
 
-	if style.Format != "json" {
-		endpoint = endpoint + "?raw=true"
-	}
+	endpoint = endpoint + "?raw=true"
 
 	contentType := c.GetHTTPContentTypeFor(style.Format, style.Version.Version)
 
