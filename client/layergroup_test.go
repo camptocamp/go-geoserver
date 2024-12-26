@@ -52,11 +52,7 @@ func TestGetGroupsNoWorkspaceSuccess(t *testing.T) {
 				<atom:link 
 				  xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/osm/styles/simplified_water.xml" type="application/xml"/>
 				</style>
-				<style>
-				  <name>osm:water</name>
-				  <atom:link 
-					xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/osm/styles/water.xml" type="application/xml"/>
-				  </style>
+				<style/>
 				</styles>
 				<metadataLinks>
 				  <metadataLink>
@@ -111,7 +107,7 @@ func TestGetGroupsNoWorkspaceSuccess(t *testing.T) {
 					Name: "osm:simplified_water",
 				},
 				{
-					Name: "osm:water",
+					Name: "",
 				},
 			},
 			Bounds: &BoundingBox{
