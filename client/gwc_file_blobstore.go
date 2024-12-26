@@ -58,6 +58,8 @@ func (c *Client) CreateBlobstoreFile(blobstoreName string, blobstore *BlobstoreF
 	case 401:
 		err = fmt.Errorf("unauthorized")
 		return
+	case 200:
+		return
 	case 201:
 		return
 	default:
