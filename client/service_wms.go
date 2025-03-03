@@ -46,17 +46,17 @@ type ServiceWms struct {
 	Workspace                               *WorkspaceRef         `xml:"workspace,omitempty"`
 	SupportedVersions                       []*ServiceVersion     `xml:"versions,omitempty"`
 	SchemaBaseURL                           string                `xml:"schemaBaseURL"`
-	UseBBOXForEachCRS                       bool                  `xml:"bboxForEachCRS"`                // Undocumented in Swagger
-	IsGetMapMimeTypeCheckingEnabled         bool                  `xml:"getMapMimeTypeCheckingEnabled"` // Undocumented in Swagger
-	IsFeaturesReprojectionDisabled          bool                  `xml:"featuresReprojectionDisabled"`  // Undocumented in Swagger
-	MaximumRequestedDimensionValues         int                   `xml:"maxRequestedDimensionValues"`   // Undocumented in Swagger
-	CacheConfiguration                      CacheConfiguration    `xml:"cacheConfiguration"`            // Undocumented in Swagger
-	RemoteStyleMaxRequestTime               int                   `xml:"remoteStyleMaxRequestTime"`     // Undocumented in Swagger
-	RemoteStyleTimeout                      int                   `xml:"remoteStyleTimeout"`            // Undocumented in Swagger
-	IsDefaultGroupStyleEnabled              bool                  `xml:"defaultGroupStyleEnabled"`      // Undocumented in Swagger
-	IsTransformFeatureInfoDisabled          bool                  `xml:"transformFeatureInfoDisabled"`  // Undocumented in Swagger
-	IsAutoEscapeTemplateValuesEnabled       bool                  `xml:"autoEscapeTemplateValues"`      // Undocumented in Swagger
-	RootLayerTitle                          string                `xml:"rootLayerTitle,omitempty"`      // Undocumented in Swagger
+	UseBBOXForEachCRS                       bool                  `xml:"bboxForEachCRS"` // Undocumented in Swagger
+	IsGetMapMimeTypeCheckingEnabled         bool                  `xml:"getMapMimeTypeCheckingEnabled"`
+	IsFeaturesReprojectionDisabled          bool                  `xml:"featuresReprojectionDisabled"` // Undocumented in Swagger
+	MaximumRequestedDimensionValues         int                   `xml:"maxRequestedDimensionValues"`  // Undocumented in Swagger
+	CacheConfiguration                      CacheConfiguration    `xml:"cacheConfiguration"`           // Undocumented in Swagger
+	RemoteStyleMaxRequestTime               int                   `xml:"remoteStyleMaxRequestTime"`    // Undocumented in Swagger
+	RemoteStyleTimeout                      int                   `xml:"remoteStyleTimeout"`           // Undocumented in Swagger
+	IsDefaultGroupStyleEnabled              bool                  `xml:"defaultGroupStyleEnabled"`     // Undocumented in Swagger
+	IsTransformFeatureInfoDisabled          bool                  `xml:"transformFeatureInfoDisabled"` // Undocumented in Swagger
+	IsAutoEscapeTemplateValuesEnabled       bool                  `xml:"autoEscapeTemplateValues"`     // Undocumented in Swagger
+	RootLayerTitle                          string                `xml:"rootLayerTitle,omitempty"`     // Undocumented in Swagger
 }
 
 type Watermark struct {
@@ -141,7 +141,7 @@ func (c *Client) UpdateServiceWMS(workspace string, serviceWms *ServiceWms) (err
 	case 405:
 		err = fmt.Errorf("forbidden")
 		return
-	case 201:
+	case 200:
 		return
 	default:
 		err = fmt.Errorf("unknown error: %d - %s", statusCode, body)
