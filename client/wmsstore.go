@@ -30,6 +30,14 @@ type WmsStore struct {
 	MaxConnections             int                 `xml:"maxConnections"`
 	ReadTimeOut                int                 `xml:"readTimeout"`
 	ConnectTimeOut             int                 `xml:"connectTimeout"`
+	Type             	   string              `xml:"type"`
+}
+
+// NewWmsStore creates a new WmsStore with default values
+func NewWmsStore() *WmsStore {
+	return &WmsStore{
+		Type: "WMS",
+	}
 }
 
 // GetWmsStores returns the list of the wms stores
