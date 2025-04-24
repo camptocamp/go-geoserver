@@ -193,7 +193,7 @@ func (c *Client) UpdateWmsLayer(workspace, wmsstore, wmsLayerName string, wmsLay
 	}
 
 	wmsLayer.XMLName = xml.Name{
-		Local: "featureType",
+		Local: "wmsLayer",
 	}
 	payload, _ := xml.Marshal(wmsLayer)
 
