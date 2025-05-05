@@ -12,7 +12,7 @@ import (
 
 func TestGetWmtsLayersNoWmtsStoreSuccess(t *testing.T) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/workspaces/foo/wmtslayers", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/layers", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -24,7 +24,7 @@ func TestGetWmtsLayersNoWmtsStoreSuccess(t *testing.T) {
 		</wmtsLayers>
 		`))
 	})
-	mux.HandleFunc("/workspaces/foo/wmtslayers/toto", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/layers/toto", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -61,7 +61,7 @@ func TestGetWmtsLayersNoWmtsStoreSuccess(t *testing.T) {
 
 func TestGetWmtsLayersInDatastoreSuccess(t *testing.T) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/wmtslayers", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/layers", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -73,7 +73,7 @@ func TestGetWmtsLayersInDatastoreSuccess(t *testing.T) {
 		</wmtsLayers>
 		`))
 	})
-	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/wmtslayers/toto", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/layers/toto", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -109,7 +109,7 @@ func TestGetWmtsLayersInDatastoreSuccess(t *testing.T) {
 
 func TestGetWmtsLayerNoDatastoreSuccess(t *testing.T) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/workspaces/foo/wmtslayers/toto", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/layers/toto", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -211,7 +211,7 @@ func TestGetWmtsLayerNoDatastoreSuccess(t *testing.T) {
 
 func TestGetWmtsLayerInWmtsStoreSuccess(t *testing.T) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/wmtslayers/toto", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/workspaces/foo/wmtsstores/bar/layers/toto", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
 
 		w.WriteHeader(200)
@@ -314,7 +314,7 @@ func TestGetWmtsLayerInWmtsStoreSuccess(t *testing.T) {
 func TestGetWmtsLayerUnauthorized(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers/toto")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers/toto")
 
 		w.WriteHeader(401)
 		w.Write([]byte(``))
@@ -335,7 +335,7 @@ func TestGetWmtsLayerUnauthorized(t *testing.T) {
 func TestGetWmtsLayerNotFound(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers/toto")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers/toto")
 
 		w.WriteHeader(404)
 		w.Write([]byte(``))
@@ -356,7 +356,7 @@ func TestGetWmtsLayerNotFound(t *testing.T) {
 func TestGetWmtsLayerUnknownError(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "GET")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers/toto")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers/toto")
 
 		w.WriteHeader(418)
 		w.Write([]byte(`I'm a teapot!`))
@@ -377,7 +377,7 @@ func TestGetWmtsLayerUnknownError(t *testing.T) {
 func TestCreateWmtsLayerNoDatastoreSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "POST")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers")
 
 		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
@@ -488,11 +488,11 @@ func TestCreateWmtsLayerNoDatastoreSuccess(t *testing.T) {
 func TestCreateWmtsLayerInDatastoreSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "POST")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtsstores/bar/wmtslayers")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtsstores/bar/layers")
 
 		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
-		var payload *WmsLayer
+		var payload *WmtsLayer
 		err = xml.Unmarshal(rawBody, &payload)
 		assert.Nil(t, err)
 		assert.Equal(t, payload, &WmtsLayer{
@@ -599,7 +599,7 @@ func TestCreateWmtsLayerInDatastoreSuccess(t *testing.T) {
 func TestUpdateWmtsLayerNoDatastoreSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "PUT")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers/toto")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers/toto")
 
 		rawBody, err := io.ReadAll(r.Body)
 		assert.Nil(t, err)
@@ -710,7 +710,7 @@ func TestUpdateWmtsLayerNoDatastoreSuccess(t *testing.T) {
 func TestDeleteWmtsLayerSuccess(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "DELETE")
-		assert.Equal(t, r.URL.Path, "/workspaces/foo/wmtslayers/toto")
+		assert.Equal(t, r.URL.Path, "/workspaces/foo/layers/toto")
 		keys, ok := r.URL.Query()["recurse"]
 		assert.True(t, ok)
 		assert.Equal(t, keys[0], "true")
