@@ -58,9 +58,9 @@ func (c *Client) GetWmtsLayers(workspace, wmtsstore string) (wmtsLayers []*WmtsL
 	}
 
 	if wmtsstore == "" {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtslayers", workspace)
+		endpoint = fmt.Sprintf("/workspaces/%s/layers", workspace)
 	} else {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/wmtslayers", workspace, wmtsstore)
+		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/layers", workspace, wmtsstore)
 	}
 
 	statusCode, body, err := c.doRequest("GET", endpoint, nil)
@@ -106,9 +106,9 @@ func (c *Client) GetWmtsLayer(workspace, wmtsstore, name string) (wmtsLayer *Wmt
 	}
 
 	if wmtsstore == "" {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtslayers/%s", workspace, name)
+		endpoint = fmt.Sprintf("/workspaces/%s/layers/%s", workspace, name)
 	} else {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/wmtslayers/%s", workspace, wmtsstore, name)
+		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/layers/%s", workspace, wmtsstore, name)
 	}
 
 	statusCode, body, err := c.doRequest("GET", endpoint, nil)
@@ -149,9 +149,9 @@ func (c *Client) CreateWmtsLayer(workspace string, wmtsstore string, wmtsLayer *
 	}
 
 	if wmtsstore == "" {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtslayers", workspace)
+		endpoint = fmt.Sprintf("/workspaces/%s/layers", workspace)
 	} else {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/wmtslayers", workspace, wmtsstore)
+		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/layers", workspace, wmtsstore)
 	}
 
 	wmtsLayer.XMLName = xml.Name{
@@ -187,9 +187,9 @@ func (c *Client) UpdateWmtsLayer(workspace, wmtsstore, wmtsLayerName string, wmt
 	}
 
 	if wmtsstore == "" {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtslayers/%s", workspace, wmtsLayerName)
+		endpoint = fmt.Sprintf("/workspaces/%s/layers/%s", workspace, wmtsLayerName)
 	} else {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/wmtslayers/%s", workspace, wmtsstore, wmtsLayerName)
+		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/layers/%s", workspace, wmtsstore, wmtsLayerName)
 	}
 
 	wmtsLayer.XMLName = xml.Name{
@@ -229,9 +229,9 @@ func (c *Client) DeleteWmtsLayer(workspace, wmtsstore, wmtsLayerName string, rec
 	}
 
 	if wmtsstore == "" {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtslayers/%s?recurse=%t", workspace, wmtsLayerName, recurse)
+		endpoint = fmt.Sprintf("/workspaces/%s/layers/%s?recurse=%t", workspace, wmtsLayerName, recurse)
 	} else {
-		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/wmtslayers/%s?recurse=%t", workspace, wmtsstore, wmtsLayerName, recurse)
+		endpoint = fmt.Sprintf("/workspaces/%s/wmtsstores/%s/layers/%s?recurse=%t", workspace, wmtsstore, wmtsLayerName, recurse)
 	}
 	statusCode, body, err := c.doRequest("DELETE", endpoint, nil)
 	if err != nil {
