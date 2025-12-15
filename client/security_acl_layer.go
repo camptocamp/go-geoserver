@@ -93,7 +93,7 @@ func (c *Client) CreateLayerRule(rule *LayerRule) (err error) {
 	case 401:
 		err = fmt.Errorf("unauthorized")
 		return
-	case 201:
+	case 200:
 		return
 	default:
 		err = fmt.Errorf("unknown error: %d - %s - %s", statusCode, body, string(payload))
