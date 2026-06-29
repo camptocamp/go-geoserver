@@ -22,7 +22,7 @@ type GwcWmsLayer struct {
 	XMLName              xml.Name      `xml:"wmsLayer"`
 	Name                 string        `xml:"name"`
 	Enabled              bool          `xml:"enabled"`
-	BlobStoreId          string        `xml:"blobStoreId"`
+	BlobStoreId          string        `xml:"blobStoreId,omitempty"`
 	MimeFormats          MimeFormats   `xml:"mimeFormats"`
 	GridSubsets          []*GridSubset `xml:"gridSubsets>gridSubset"`
 	MetaTileDimensions   []int         `xml:"metaWidthHeight>int"`
