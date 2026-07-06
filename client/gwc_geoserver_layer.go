@@ -6,20 +6,10 @@ import (
 	"fmt"
 )
 
-// GwcLayerReference is a reference to a Gridset
-type GwcLayerReference struct {
-	Name string `xml:"name"`
-}
-
-// GwcLayers is a list of gwc layer references
-type GwcLayers struct {
-	XMLName xml.Name             `xml:"layers"`
-	List    []*GwcLayerReference `xml:"layer"`
-}
-
-// GwcWmsLayer is a Geoserver object
-type GwcWmsLayer struct {
-	XMLName              xml.Name      `xml:"wmsLayer"`
+// GwcGsLayer is a Geoserver object
+type GwcGsLayer struct {
+	XMLName              xml.Name      `xml:"GeoServerLayer"`
+	Id                   string        `xml:"id,omitempty"`
 	Name                 string        `xml:"name"`
 	Enabled              bool          `xml:"enabled"`
 	BlobStoreId          string        `xml:"blobStoreId,omitempty"`
@@ -29,18 +19,12 @@ type GwcWmsLayer struct {
 	ExpireCacheDuration  int           `xml:"expireCache"`
 	ExpireClientDuration int           `xml:"expireClients"`
 	GutterSize           int           `xml:"gutter"`
-	BackendTimeout       int           `xml:"backendTimeout"`
 	CacheBypassAllowed   bool          `xml:"cacheBypassAllowed"`
-	WmsUrl               string        `xml:"wmsUrl>string"`
-	WmsLayer             string        `xml:"wmsLayers"`
-	WmsVersion           string        `xml:"wmsVersion,omitempty"`
-	VendorParameters     string        `xml:"vendorParameters,omitempty"`
-	Transparent          bool          `xml:"transparent"`
-	BgColor              string        `xml:"bgColor,omitempty"`
+	AutoCacheStyles      bool          `xml:"autoCacheStyles,omitempty"`
 }
 
 // GetGridset return a single Gridset based on its name
-func (c *Client) GetGwcWMSLayer(name string) (layer *GwcWmsLayer, err error) {
+func (c *Client) GetGwcGsLayer(name string) (layer *GwcGsLayer, err error) {
 	statusCode, body, err := c.doRequest("GET", fmt.Sprintf("/layers/%s", name), nil)
 	if err != nil {
 		return
@@ -62,7 +46,7 @@ func (c *Client) GetGwcWMSLayer(name string) (layer *GwcWmsLayer, err error) {
 		return
 	}
 
-	var data GwcWmsLayer
+	var data GwcGsLayer
 	if err := xml.Unmarshal([]byte(body), &data); err != nil {
 		return layer, err
 	}
@@ -72,8 +56,8 @@ func (c *Client) GetGwcWMSLayer(name string) (layer *GwcWmsLayer, err error) {
 	return
 }
 
-// CreateGwcWmsLayer creates a GWC WMS Layer
-func (c *Client) CreateGwcWmsLayer(layerName string, layer *GwcWmsLayer) (err error) {
+// CreateGwcWmsLayer creates a GWC GS Layer
+func (c *Client) CreateGwcGsLayer(layerName string, layer *GwcGsLayer) (err error) {
 	payload, _ := xml.Marshal(&layer)
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/layers/%s", layerName), bytes.NewBuffer(payload))
 	if err != nil {
@@ -94,8 +78,8 @@ func (c *Client) CreateGwcWmsLayer(layerName string, layer *GwcWmsLayer) (err er
 	}
 }
 
-// UpdateGwcWmsLayer updates a GWC wms layer
-func (c *Client) UpdateGwcWmsLayer(layerName string, layer *GwcWmsLayer) (err error) {
+// UpdateGwcWmsLayer updates a GWC GS layer
+func (c *Client) UpdateGwcGsLayer(layerName string, layer *GwcGsLayer) (err error) {
 	payload, _ := xml.Marshal(&layer)
 
 	statusCode, body, err := c.doRequest("PUT", fmt.Sprintf("/layers/%s", layerName), bytes.NewBuffer(payload))
@@ -122,7 +106,7 @@ func (c *Client) UpdateGwcWmsLayer(layerName string, layer *GwcWmsLayer) (err er
 }
 
 // DeleteGridset deletes a gridset
-func (c *Client) DeleteGwcWmsLayer(layerName string) (err error) {
+func (c *Client) DeleteGwcGsLayer(layerName string) (err error) {
 	statusCode, body, err := c.doRequest("DELETE", fmt.Sprintf("/layers/%s", layerName), nil)
 	if err != nil {
 		return
